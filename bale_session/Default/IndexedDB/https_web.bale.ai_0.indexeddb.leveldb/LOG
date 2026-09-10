@@ -1,0 +1,25 @@
+2026/09/10-10:35:16.584 3b90 Reusing MANIFEST S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/10-10:35:16.584 3b90 Recovering log #383
+2026/09/10-10:35:16.585 3b90 Reusing old log S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/000383.log 
+2026/09/10-10:35:16.585 3b90 Delete type=2 #382
+2026/09/10-10:35:16.612 5514 Level-0 table #388: started
+2026/09/10-10:35:16.613 5514 Level-0 table #388: 12614 bytes OK
+2026/09/10-10:35:16.614 5514 Delete type=0 #383
+2026/09/10-10:35:16.615 5514 Manual compaction at level-0 from '\x00\x84\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x85\x00\x00\x00' @ 0 : 0; will stop at '\x00\x84\x00\x00\x05' @ 60861 : 1
+2026/09/10-10:35:16.615 5514 Compacting 1@0 + 1@1 files
+2026/09/10-10:35:16.641 5514 Generated table #389@0: 16379 keys, 1411009 bytes
+2026/09/10-10:35:16.641 5514 Compacted 1@0 + 1@1 files => 1411009 bytes
+2026/09/10-10:35:16.642 5514 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/09/10-10:35:16.642 5514 Delete type=2 #388
+2026/09/10-10:35:16.642 5514 Manual compaction at level-0 from '\x00\x84\x00\x00\x05' @ 60861 : 1 .. '\x00\x85\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/09/10-10:37:04.627 4d50 Level-0 table #391: started
+2026/09/10-10:37:04.628 4d50 Level-0 table #391: 4427 bytes OK
+2026/09/10-10:37:04.629 4d50 Delete type=2 #385
+2026/09/10-10:37:04.629 4d50 Delete type=0 #387
+2026/09/10-10:37:04.630 1594 Manual compaction at level-0 from '\x00\x85\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x86\x00\x00\x00' @ 0 : 0; will stop at '\x00\x85\x00\x00\x05' @ 60994 : 1
+2026/09/10-10:37:04.630 1594 Compacting 1@0 + 1@1 files
+2026/09/10-10:37:04.656 1594 Generated table #392@0: 16379 keys, 1411089 bytes
+2026/09/10-10:37:04.656 1594 Compacted 1@0 + 1@1 files => 1411089 bytes
+2026/09/10-10:37:04.656 1594 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/09/10-10:37:04.657 1594 Delete type=2 #391
+2026/09/10-10:37:04.657 1594 Manual compaction at level-0 from '\x00\x85\x00\x00\x05' @ 60994 : 1 .. '\x00\x86\x00\x00\x00' @ 0 : 0; will stop at (end)
