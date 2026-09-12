@@ -185,10 +185,15 @@ app.get('/api/campaigns/:id/status', async (req, res) => {
             return res.status(404).json({ success: false, error: 'کمپین مورد نظر یافت نشد.' });
         }
 
-        // آمارگیری از وضعیت کاربران در دیتابیس برای این کمپین یا کل صف
         const totalUsers = await User.countDocuments({ isActive: true });
-        const sentUsers = await User.countDocuments({ status: 'sent', isActive: true });
-        const pendingUsers = await User.countDocuments({ status: 'pending', isActive: true });
+
+        // شمارش دقیق بر اساس اینکه آیا کاربر از این نوع پیام (عادی یا جشنواره) دریافت کرده است یا خیر
+        const sentUsers = await User.countDocuments({
+            isActive: true,
+            'receivedMessages.messageType': campaign.type
+        });
+
+        const pendingUsers = totalUsers - sentUsers;
 
         res.json({
             success: true,
@@ -196,7 +201,7 @@ app.get('/api/campaigns/:id/status', async (req, res) => {
                 campaignId: campaign._id,
                 title: campaign.title,
                 type: campaign.type,
-                status: campaign.status, // مثل running, paused, completed, cancelled, idle
+                status: campaign.status,
                 totalSent: campaign.totalSent,
                 stats: {
                     totalUsers,
@@ -219,13 +224,16 @@ app.get('/api/campaigns/:id/status', async (req, res) => {
 // ==========================================
 // 🚀 موتور پردازش هوشمند کمپین‌ها و صف
 // ==========================================
-let activeInterval = null;
+
+let activeTimeout = null;
+let countdownInterval = null; // 👈 برای نگهداری تایمر ثانیه‌شمار
 
 export const runCampaignWorker = (campaignId) => {
-    if (activeInterval) clearInterval(activeInterval);
+    // پاک کردن تایمرها و ثانیه‌شمارهای قبلی اگر وجود داشته باشند
+    if (activeTimeout) clearTimeout(activeTimeout);
+    if (countdownInterval) clearInterval(countdownInterval);
 
-    // بررسی صف هر ۲ دقیقه یک‌بار
-    activeInterval = setInterval(async () => {
+    const runStep = async () => {
         try {
             console.log('⏳ Worker: Checking campaign status...');
 
@@ -233,24 +241,38 @@ export const runCampaignWorker = (campaignId) => {
             const campaign = await Campaign.findById(campaignId);
             if (!campaign || campaign.status !== 'running') {
                 console.log('🛑 کمپین متوقف، لغو یا پایان یافته است.');
-                clearInterval(activeInterval);
-                activeInterval = null;
+                if (activeTimeout) clearTimeout(activeTimeout);
+                if (countdownInterval) clearInterval(countdownInterval);
+                activeTimeout = null;
+                countdownInterval = null;
                 return;
             }
 
-            // ۲. پیدا کردن اولین کاربر با وضعیت pending (سیستم Resume خودکار)
-            let targetUser = await User.findOne({ status: 'pending', isActive: true });
+            let targetUser = null;
+
+            // ۲. منطق جستجوی کاربر بر اساس نوع کمپین
+            if (campaign.type === 'festival') {
+                targetUser = await User.findOne({
+                    isActive: true,
+                    mobile: { $exists: true, $ne: null },
+                    'receivedMessages.messageType': { $ne: 'festival' }
+                });
+            } else {
+                targetUser = await User.findOne({ status: 'pending', isActive: true });
+            }
 
             if (!targetUser) {
-                console.log('✨ تمام کاربران این صف پیام دریافت کرده‌اند.');
+                console.log(`✨ تمام کاربران واجد شرایط برای کمپین ${campaign.type} پیام دریافت کرده‌اند.`);
                 campaign.status = 'completed';
                 await campaign.save();
-                clearInterval(activeInterval);
-                activeInterval = null;
+                if (activeTimeout) clearTimeout(activeTimeout);
+                if (countdownInterval) clearInterval(countdownInterval);
+                activeTimeout = null;
+                countdownInterval = null;
                 return;
             }
 
-            // ۳. اعمال قوانین ارسال بر اساس نوع کمپین (عادی با قانون ۳۰ روزه یا جشنواره بدون محدودیت)
+            // ۳. اعمال قوانین ارسال هوشمند (Cooldown یک ماهه برای پیام‌های عادی)
             if (campaign.type === 'normal') {
                 const oneMonthAgo = new Date();
                 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
@@ -260,17 +282,20 @@ export const runCampaignWorker = (campaignId) => {
                 );
 
                 if (hasRecentNormal) {
-                    console.log(`⏳ کاربر ${targetUser.mobile} در ۱ ماه گذشته پیام عادی گرفته است. رد شدن از این کاربر...`);
+                    console.log(`⏳ کاربر ${targetUser.mobile} در ۱ ماه گذشته پیام عادی گرفته است. رد شدن...`);
                     targetUser.status = 'sent';
                     await targetUser.save();
+                    // بلافاصله بدون معطلی می‌رویم سراغ کاربر بعدی
+                    activeTimeout = setTimeout(runStep, 2000);
                     return;
                 }
             }
 
-            // ۴. انتخاب رندوم یک پیام از بین پیام‌های هم‌نوع (مثلاً از بین ۲۰۰ پیام عادی یا جشنواره)
+            // ۴. انتخاب رندوم یک پیام از بین پیام‌های هم‌نوع
             const messagesPool = await Message.find({ type: campaign.type });
             if (messagesPool.length === 0) {
                 console.log(`⚠️ هیچ پیامی از نوع ${campaign.type} در دیتابیس ثبت نشده است!`);
+                activeTimeout = setTimeout(runStep, 10000);
                 return;
             }
             const randomMessage = messagesPool[Math.floor(Math.random() * messagesPool.length)];
@@ -282,21 +307,57 @@ export const runCampaignWorker = (campaignId) => {
 
             if (isSuccess) {
                 targetUser.receivedMessages.push({ messageType: campaign.type, sentAt: new Date() });
-                targetUser.status = 'sent';
+
+                if (campaign.type === 'normal') {
+                    targetUser.status = 'sent';
+                }
+
                 await targetUser.save();
 
                 campaign.totalSent += 1;
                 await campaign.save();
-                console.log(`✅ پیام با موفقیت به ${targetUser.mobile} ارسال و در دیتابیس ثبت شد.`);
+                console.log(`✅ پیام ${campaign.type} با موفقیت به ${targetUser.mobile} ارسال و ثبت شد.`);
             } else {
-                console.log(`⚠️ ارسال برای ${targetUser.mobile} ناموفق بود. در صف باقی می‌ماند تا در دور بعدی تلاش شود.`);
+                console.log(`⚠️ ارسال برای ${targetUser.mobile} ناموفق بود. در تلاش بعدی دوباره بررسی می‌شود.`);
             }
 
         } catch (error) {
             console.error('❌ خطا در پردازشگر کمپین:', error.message);
         }
-    }, 60000); // هر ۲ دقیقه
+
+        // ۶. محاسبه زمان رندوم بین ۳ تا ۵ دقیقه (۱۸۰۰۰۰ تا ۳۰۰۰۰۰ میلی‌ثانیه)
+        const randomDelay = Math.floor(Math.random() * (300000 - 180000 + 1)) + 180000;
+        let remainingSeconds = Math.floor(randomDelay / 1000);
+
+        console.log(`⏳ زمان انتظار تا ارسال پیام بعدی: ${Math.floor(remainingSeconds / 60)} دقیقه و ${remainingSeconds % 60} ثانیه.`);
+
+        // پاک کردن ثانیه‌شمار قبلی (اگر بود)
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        // راه اندازی ثانیه‌شمار معکوس هر یک ثانیه یک‌بار
+        countdownInterval = setInterval(() => {
+            remainingSeconds--;
+            if (remainingSeconds > 0) {
+                const mins = Math.floor(remainingSeconds / 60);
+                const secs = remainingSeconds % 60;
+                // چاپ ثانیه‌شمار به صورت روان در کنسول
+                process.stdout.write(`\r⏱️ زمان باقی‌مانده تا ارسال بعدی: ${mins} دقیقه و ${secs < 10 ? '0' : ''}${secs} ثانیه   `);
+            } else {
+                clearInterval(countdownInterval);
+                process.stdout.write('\r                                                                       \r'); // پاک کردن خط کنسول
+            }
+        }, 1000);
+
+        // تنظیم تایمر اصلی برای اجرای مرحله بعد
+        activeTimeout = setTimeout(runStep, randomDelay);
+    };
+
+    // شروع اولین اجرای حلقه
+    runStep();
 };
+
+// 6aa4ecbef558110c2b1d7e21 نرمال
+// 6aa4ee3be1d9e542c8868a65 جشنواره
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
