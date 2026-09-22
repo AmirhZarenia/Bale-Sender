@@ -1,0 +1,591 @@
+[9:10:04.883] [Info:Metadata Headers] {"app_version":"171248","browser_type":"1","browser_version":"153.0.0.0","os_type":"3","session_id":"1789882804882","mt_app_version":"171248","mt_browser_type":"1","mt_browser_version":"153.0.0.0","mt_os_type":"3","mt_session_id":"1789882804882"}
+[9:10:04.928] [Info:App Version] 5.6.0 - 171248, Browser: ,chrome - 153.0.0.0, Platform: ,Windows, OS: ,windows - NT 10.0
+[9:10:04.937] [Info:local storage is available] 
+[9:10:04.948] [Info:Date:] "2026-09-20T05:40:04.948Z",Date now:,1789882804948,Diff:,0
+[9:10:05.280] [Info:QueryDB Worker] IDB Worker created via createWorkerDB
+[9:10:05.290] [Debug:DB KV] Opening DB,kv,1
+[9:10:05.290] [Debug:DB KV] Reading stored versions,kv
+[9:10:05.300] [Info:Core] Api mode,windows
+[9:10:05.340] [Warn:Core] init CoreAuth
+[9:10:05.370] [Warn:Core] state,0
+[9:10:05.380] [Debug:DB] Opening DB,db,31
+[9:10:05.380] [Debug:DB] Reading stored versions,db
+[9:10:05.400] [Debug:filesDB] Opening DB,files-db,8
+[9:10:05.400] [Debug:filesDB] Reading stored versions,files-db
+[9:10:05.410] [Debug:DB KV] Stored versions read successfully,kv
+[9:10:05.440] [Debug:DB] Stored versions read successfully,db
+[9:10:05.440] [Info:RemoteConfig] Remote config loaded
+[9:10:05.450] [Debug:filesDB] Stored versions read successfully,files-db
+[9:10:05.470] [Debug:DB KV] Opening DB request,kv,2
+[9:10:05.470] [Debug:DB] Opening DB request,db,2
+[9:10:05.470] [Debug:filesDB] Opening DB request,files-db,2
+[9:10:05.470] [Debug:DB KV] DB Opened Successfully!,0,false
+[9:10:05.480] [Warn:DB KV] Check: Database "kv" no object store Checks !!!
+[9:10:05.480] [Debug:DB] DB Opened Successfully!,0,false
+[9:10:05.480] [Info:DB] Check: Database "db" has all object stores, all good
+[9:10:05.480] [Info:object stores after openDB = ] {"0":"_schema","1":"bills","2":"charges","3":"comments","4":"configs","5":"contacts","6":"dialog_click","7":"dialogs","8":"feed_messages","9":"flow_recent_search","10":"folders","11":"full_groups","12":"full_users","13":"groups","14":"orders","15":"peer_recent_search","16":"pending_messages","17":"pending_operations","18":"pinned_dialogs","19":"recommended_peers","20":"saved_gifs","21":"scheduled_peers","22":"sequences","23":"short_dialogs","24":"sticker_collections","25":"top_peers","26":"users","27":"vitrine"}
+[9:10:05.490] [Debug:filesDB] DB Opened Successfully!,0,false
+[9:10:05.490] [Info:filesDB] Check: Database "files-db" has all object stores, all good
+[9:10:05.228] [Info:Core] Static modules are initialized
+[9:10:05.230] [Warn:AuthModule] Tokens,false,true
+[9:10:05.231] [Info:Measure Init App] 302.6000000000349
+[9:10:05.246] [Debug:ACS] Auth/changeAuthState - dispatching immediately
+[9:10:05.249] [Debug:ACS] Auth/setAuthenticatedUser - dispatching immediately
+[9:10:05.293] [Debug:ACS] Scheduling action mainSectionRouting/setMainSectionRoute | 1
+[9:10:05.308] [Debug:ACS] Scheduling action Entry/setEntry | 1
+[9:10:05.311] [Debug:Seraj Log Analytics Event] web_vitals_FCP,{"value":856,"delta":856,"url":"/"}
+[9:10:05.312] [Info:Measure init app render: ] 384
+[9:10:05.318] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:05.326] [Debug:Seraj Log Analytics Event] web_vitals_TTFB,{"value":66,"delta":66,"url":"/"}
+[9:10:05.340] [Debug:ACS] Scheduling action Settings/Received | 1
+[9:10:05.341] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_vitals_FCP","date":1789882805341}
+[9:10:05.342] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_vitals_TTFB","date":1789882805342}
+[9:10:05.346] [Debug:ACS] Scheduling action Users/setFullUsers | 1
+[9:10:05.348] [Debug:ACS] Auth/setAuthenticatedUser - dispatching immediately
+[9:10:05.423] [Debug:ACS] Scheduling action Settings/Received | 1
+[9:10:06.133] [Info:Core] Loading dynamic modules
+[9:10:06.137] [Warn:PowerSavingManager] sync,true
+[9:10:06.143] [Debug:PowerSavingManager] battery,{}
+[9:10:06.143] [Debug:PowerSavingManager] battery,{}
+[9:10:06.150] [Debug:ACS] Dispatching mainSectionRouting/setMainSectionRoute
+[9:10:06.151] [Debug:ACS] Dispatching Entry/setEntry
+[9:10:06.151] [Debug:ACS] Dispatching Settings/Received
+[9:10:06.162] [Debug:ACS] Dispatching Users/setFullUsers
+[9:10:06.163] [Debug:ACS] Dispatching Settings/Received
+[9:10:06.259] [Info:CoreModuleBuilder] Using IndexedDB-backed message history (worker)
+[9:10:06.269] [Info:Core] Dynamic modules are initialized
+[9:10:06.269] [Info:Core] Start
+[9:10:06.270] [Warn:EventsModule:New] Start Event
+[9:10:06.271] [Info:EventsModule:New] ApplyEventsByRouteInParallel,false
+[9:10:06.272] [Info:SerajEventModule] seraj configs loaded,{"size":30,"interval":30000,"filterEnabled":true,"allowedEvents":["web_chat_performance_inp","web_chat_performance_loaf_work","web_chat_performance_loaf_render","time_in_chat","open_dialogue","get_ad_provider","services_click_action","navigation_select_tab","services_interactive_bot","ad_dialogue_view","ad_dialogue_click","event_bar","push","mini_apps","ai_tab","install_ios_promotion","web_app_bar_eventbar","initial_get_diff","get_diff_apply_events","web_connection_time","chat_open_performance","web_download_file_metrics","flow_post_duration","flow_post_action","flow_category_action","download_traffic","time_to_first_frame_event","rebuffering_time_event"]}
+[9:10:06.274] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:06.275] [Debug:DB] preload,configs
+[9:10:06.275] [Debug:DB] preload,users
+[9:10:06.275] [Debug:DB] preload,groups
+[9:10:06.275] [Debug:DB] preload,dialogs
+[9:10:06.275] [Debug:DB] preload,folders
+[9:10:06.276] [Debug:DB] preload,pinned_dialogs
+[9:10:06.276] [Debug:WS] open,wss://next-ws.bale.ai/ws/
+[9:10:06.277] [Debug:WS] _open
+[9:10:06.278] [Debug:WS] ws,state,unknown
+[9:10:06.326] [Debug:Status] isSyncing,true
+[9:10:06.327] [Debug:Status] current,isConnecting,next,isSyncing
+[9:10:06.327] [Debug:ACS] OtherSlice/appStatusChanged - dispatching immediately
+[9:10:06.328] [Debug:Status] isConnecting,0
+[9:10:06.329] [Debug:Status] current,isSyncing,next,isSyncing
+[9:10:06.329] [Debug:ACS] OtherSlice/appStatusChanged - dispatching immediately
+[9:10:06.331] [Debug:ACS] Scheduling action RecentStickers | 1
+[9:10:06.342] [Debug:SW] Register
+[9:10:06.348] [Info:SchedulerModule] peersWithScheduleTask: loading from cache
+[9:10:06.351] [Debug:[Notification]] start initial notification
+[9:10:06.352] [Debug:SW] Registered
+[9:10:06.352] [Debug:ACS] Scheduling action notification/initialPushNotification | 1
+[9:10:06.353] [Warn:EventsModule:New] Should get Diff,true
+[9:10:06.354] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:06.355] [Debug:Status] isSyncing,true
+[9:10:06.355] [Debug:Status] current,isSyncing,next,isSyncing
+[9:10:06.355] [Debug:ACS] OtherSlice/appStatusChanged - dispatching immediately
+[9:10:06.359] [Debug:EventsModule:New] Routes: ,{}
+[9:10:06.359] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:06.360] [Warn:EventsModule:New] Connection
+[9:10:06.361] [Error:EventsApi] Stream error,Connction not ok!
+[9:10:06.362] [Error:EventsModule:New] Subscribe Error,Connction not ok!
+[9:10:06.363] [Info:EventsApi] Cancel subscribe to updates, ID: ,0
+[9:10:06.404] [Debug:lazyModule] Module loaded:,emoji,2078.0999999999767
+[9:10:06.407] [Info:recorder usingTGVoiceRecorder] 
+[9:10:06.409] [Debug:Web-Meet: Provider] token,false
+[9:10:06.409] [Debug:Web-Meet: Provider] ID,undefined
+[9:10:06.409] [Info:Web-Meet: Provider] meet Props memo
+[9:10:06.410] [Debug:ACS] Scheduling action mainSectionRouting/setMainSectionRoute | 1
+[9:10:06.421] [Debug:DB] preload
+[9:10:06.422] [Debug:DB] preload
+[9:10:06.425] [Debug:DB] preload
+[9:10:06.426] [Debug:DB] preload
+[9:10:06.427] [Debug:DB] preload
+[9:10:06.427] [Debug:DB] preload
+[9:10:06.427] [Info:SyncPendingOps] no pending operations to sync
+[9:10:06.429] [Info:SchedulerModule] loadFromCache: loaded,0,peers
+[9:10:06.429] [Info:SchedulerEpics] getPeersWithScheduledTasks response,{"exPeer":[]}
+[9:10:06.430] [Debug:ACS] Scheduling action scheduler/setPeersWithScheduledTasks | 1
+[9:10:06.432] [Info:Meet: Sound Notifier] stop sound notifier
+[9:10:06.441] [Debug:ACS] Dispatching RecentStickers
+[9:10:06.462] [Debug:lazyModule] Module loaded:,meet,2136
+[9:10:06.471] [Debug:Meet: Room Provider] configs changed
+[9:10:06.473] [Info:Meet: Room Provider] meet library rendered
+[9:10:06.660] [Debug:ACS] Dialogs/LoadDialogs - dispatching immediately
+[9:10:06.662] [Warn:DialogsModule] Load Dialogs,0,{"isLoaded":true,"lastLoadedDate":1782738456812},9007199254740991
+[9:10:06.663] [Warn:DialogsModule] Load Dialogs,From cache,{"folderId":0,"info":{"isLoaded":true,"lastLoadedDate":1782738456812},"date":9007199254740991}
+[9:10:06.663] [Debug:DialogsModule] cache-load: begin,{"tag":"dialogs:0","next":1}
+[9:10:06.665] [Debug:DialogsModule] [perf] getAll,{"folderId":0,"time":0.29999999998835847}
+[9:10:06.666] [Info:DialogsModule] [perf] filter dialogs,{"folderId":0,"time":1.599999999976717}
+[9:10:06.668] [Debug:ACS] DialogsSlice/dialogsLoading - dispatching immediately
+[9:10:06.669] [Warn:Dialog Slice] dialogs loading. info:,undefined,undefined
+[9:10:06.673] [Debug:ACS] Dialogs/LoadPinnedDialogs - dispatching immediately
+[9:10:06.674] [Debug:DialogsModule] loadPinnedDialogs,before from cache
+[9:10:06.675] [Debug:DialogsModule] cache-load: begin,{"tag":"pinnedDialogs:0","next":2}
+[9:10:06.675] [Debug:DialogsModule] loadPinnedDialogs, dialogs,[]
+[9:10:06.676] [Debug:DialogsModule] cache-load: end,{"tag":"pinnedDialogs:0","next":1}
+[9:10:06.677] [Debug:ACS] DialogsSlice/pinnedDialogs - dispatching immediately
+[9:10:06.681] [Debug:ACS] Scheduling action Contacts/GetContacts | 1
+[9:10:06.683] [Debug:ACS] Scheduling action Tooltip/fireEvent | 1
+[9:10:06.684] [Debug:ACS] Folders/LoadFolders - dispatching immediately
+[9:10:06.686] [Debug:ACS] Scheduling action folders/setAreFoldersLoading | 1
+[9:10:06.687] [Debug:Set Presence Online initial] true
+[9:10:06.688] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:06.689] [Debug:ACS] sidebarSearch/changeSidebarSearchQuery - dispatching immediately
+[9:10:06.692] [Debug:ACS] Scheduling action FlowMagazine/getUpvoteMessages | 0
+[9:10:06.692] [Debug:ACS] Scheduling action FeedMessages/loadFeedCategories | 1
+[9:10:06.693] [Debug:Seraj Log Analytics Event] navigation_select_tab,{"tab_title":"گفتگو","tab_number":0}
+[9:10:06.693] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"navigation_select_tab","date":1789882806693}
+[9:10:06.697] [Debug:Meet: Room Provider] callConfigs,{"voiceConfig":{"audioBitrate":24000},"videoConfig":{"maxBitrate":1000000,"maxFps":30,"videoCodec":"vp9","simulcast":true,"screenShareConfig":{"maxBitrate":800000,"maxFps":15}}}
+[9:10:06.701] [Info:Meet: Room Provider] meet room changed
+[9:10:06.703] [Info:Meet: Room Provider] meet library rendered
+[9:10:06.725] [Info:Meet: Room Provider] meet room changed
+[9:10:06.727] [Info:FoldersModule] start loadFolders
+[9:10:06.734] [Info:DialogsModule] [AutoLoad] START,{"folderId":0,"date":9007199254740991,"totalDialogs":11,"limit":60,"infoIsLoaded":true}
+[9:10:06.735] [Info:DialogsModule] [AutoLoad] Archive not active, returning as-is
+[9:10:06.737] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:06.744] [Debug:ACS] groups/setGroups - dispatching immediately
+[9:10:06.750] [Info:GroupModule] loadGroups,requiredGroups,[]
+[9:10:06.751] [Debug:DialogsModule] load entities,{"folderId":0,"date":9007199254740991,"length":11,"info":{"isLoaded":true,"lastLoadedDate":1782738456812},"time":15.299999999988358}
+[9:10:06.753] [Debug:DialogsModule] load dialogs from cache complete,{"folderId":0,"time":86.89999999996508},[{"peer":{"type":1,"id":1570072995},"unreadCount":0,"sortDate":1789553513685,"senderUid":1570072995,"rid":"6880637861666274289","date":1789553513685,"state":2,"firstUnreadDate":1789553513685,"exInfo":{"exPeerType":4,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1570072995,"isGrouped":false},{"peer":{"type":2,"id":255637216},"unreadCount":0,"sortDate":1789552801042,"senderUid":1995566227,"rid":"-378348602712790373","date":1789552801042,"state":2,"firstUnreadDate":1789552801042,"exInfo":{"exPeerType":3,"peerIdentity":1},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":4550604512,"isGrouped":false},{"peer":{"type":1,"id":145829091},"unreadCount":0,"sortDate":1789284381785,"senderUid":145829091,"rid":"5750175715498604643","date":1789284381785,"state":2,"firstUnreadDate":1789284381785,"exInfo":{"exPeerType":4,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":145829091,"isGrouped":false},{"peer":{"type":1,"id":1570257794},"unreadCount":0,"sortDate":1788940102204,"senderUid":1570257794,"rid":"6671179480706501326","date":1788940102204,"state":2,"firstUnreadDate":1788940102204,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1570257794,"isGrouped":false},{"peer":{"type":1,"id":10},"unreadCount":0,"sortDate":1788934907295,"senderUid":10,"rid":"8473391993190406482","date":1788934907295,"state":2,"firstUnreadDate":1788934907295,"exInfo":{"exPeerType":4,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":10},{"peer":{"type":1,"id":1836209778},"unreadCount":0,"sortDate":1788260527242,"senderUid":1836209778,"rid":"-210784095725526888","date":1788260527242,"state":2,"firstUnreadDate":1788260527242,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":true,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1836209778},{"peer":{"type":1,"id":1685459284},"unreadCount":0,"sortDate":1788259687823,"senderUid":1685459284,"rid":"-4856426453340629106","date":1788259687823,"state":2,"firstUnreadDate":1788259687823,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1685459284},{"peer":{"type":1,"id":1532578169},"unreadCount":0,"sortDate":1786705713293,"senderUid":1532578169,"rid":"2832674758266063148","date":1786705713293,"state":2,"firstUnreadDate":1786705713293,"exInfo":{"exPeerType":4,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1532578169},{"peer":{"type":1,"id":1326381370},"unreadCount":0,"sortDate":1785221839135,"senderUid":1326381370,"rid":"5601291059114484639","date":1785221839135,"state":2,"firstUnreadDate":1785221839135,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":1326381370},{"peer":{"type":1,"id":147958567},"unreadCount":0,"sortDate":1782850653527,"senderUid":147958567,"rid":"873453909043427083","date":1782850653527,"state":2,"firstUnreadDate":1782850653527,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":147958567},{"peer":{"type":1,"id":2102660609},"unreadCount":0,"sortDate":1782738456812,"senderUid":2102660609,"rid":"-8693183989750443733","date":1782738456812,"state":2,"firstUnreadDate":1782738456812,"exInfo":{"exPeerType":1,"peerIdentity":0},"isMessageForwarded":false,"unreadMentions":[],"unreadReactions":[],"markedAsUnread":false,"isMute":false,"id":2102660609}]
+[9:10:06.754] [Debug:ACS] DialogsSlice/dialogsReceived - dispatching immediately
+[9:10:06.754] [Info:Dialog Slice] received dialogs: ,0,11
+[9:10:06.759] [Debug:ACS] Scheduling action ShortDialogs/getShortDialogs | 1
+[9:10:06.760] [Debug:DialogsModule] cache-load: end,{"tag":"dialogs:0","next":0}
+[9:10:06.761] [Info:FoldersModule] loadFolders from db,[{"id":0,"name":"","peers":[],"unreadPeers":[],"isReserved":true,"index":0},{"id":1,"name":"","peers":[],"unreadPeers":[],"isReserved":true,"index":1},{"id":2,"name":"","peers":[],"unreadPeers":[],"isReserved":true,"index":2},{"id":3,"name":"","peers":[],"unreadPeers":[],"isReserved":true,"index":3},{"id":4,"name":"","peers":[],"unreadPeers":[],"isReserved":true,"index":4}]
+[9:10:06.761] [Info:FoldersModule] Processing queued events
+[9:10:06.767] [Info:ACS] App marked as ready - processing low priority queue
+[9:10:06.768] [Info:Measure load_dialogs:] 208.40000000002328
+[9:10:06.768] [Debug:Seraj Log Analytics Event] web_load_dialogs,{"value":208}
+[9:10:06.769] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_load_dialogs","date":1789882806769}
+[9:10:06.770] [Info:Measure init_app_to_dialogs:] 1841.4000000000233
+[9:10:06.772] [Debug:ACS] folders/setReceivedFolders - dispatching immediately
+[9:10:06.774] [Debug:ACS] Scheduling action folders/setAreFoldersLoading | 1
+[9:10:06.842] [Error:getting UTC time failed] {}
+[9:10:07.448] [Debug:WS] ws open,start,handshake
+[9:10:07.462] [Debug:lazyModule] Module loaded:,bank,3135.7000000000116
+[9:10:07.499] [Debug:lazyModule] Module loaded:,growth,3173.2000000000116
+[9:10:07.532] [Debug:lazyModule] Module loaded:,advertisement,3205.9000000000233
+[9:10:07.578] [Debug:lazyModule] Module loaded:,story,3252
+[9:10:07.584] [Debug:ACS] Scheduling action Story/GetStories | 1
+[9:10:07.585] [Debug:ACS] StorySlice/setStoryRowVisible - dispatching immediately
+[9:10:07.588] [Debug:ACS] Scheduling action Story/GetStories | 1
+[9:10:07.720] [Debug:ACS] Scheduling action Meet/GetOnGoingCalls | 1
+[9:10:07.721] [Debug:ACS] Scheduling action Meet/setSelectCallLogs | 1
+[9:10:07.754] [Debug:ACS] Scheduling action growth/emptyStates/GetBotsData | 1
+[9:10:07.757] [Debug:ACS] Scheduling action marketing/fetchAllTools | 1
+[9:10:07.758] [Debug:ACS] Scheduling action Advertisement/GetDialogAdWithInterval | 0
+[9:10:07.783] [Debug:ACS] Dispatching starved medium priority action: notification/initialPushNotification
+[9:10:07.787] [Debug:ACS] Dispatching starved medium priority action: mainSectionRouting/setMainSectionRoute
+[9:10:07.789] [Debug:ACS] Scheduling action Advertisement/NextDialogAdWithThrottle | 0
+[9:10:07.790] [Debug:ACS] Dispatching starved medium priority action: scheduler/setPeersWithScheduledTasks
+[9:10:07.791] [Debug:ACS] Dispatching starved medium priority action: Contacts/GetContacts
+[9:10:07.792] [Debug:ACS] Scheduling action Contacts/setContactsLoading | 1
+[9:10:07.793] [Debug:ACS] Dispatching starved medium priority action: Tooltip/fireEvent
+[9:10:07.795] [Debug:ACS] Dispatching starved medium priority action: folders/setAreFoldersLoading
+[9:10:07.796] [Debug:ACS] Dispatching starved medium priority action: Presence/SetOnline
+[9:10:07.798] [Debug:ACS] Dispatching starved medium priority action: FeedMessages/loadFeedCategories
+[9:10:07.798] [Info:lazyModuleMiddleware] Action "FeedMessages/loadFeedCategories" requires lazy module "flow" - loading module
+[9:10:07.798] [Debug:lazyModuleMiddleware] Loading module "flow"...
+[9:10:07.798] [Debug:ACS] Dispatching starved medium priority action: ShortDialogs/getShortDialogs
+[9:10:07.799] [Info:SearchEpic] LocalDialogSearch,getDialogsShortEpic 1,true
+[9:10:07.800] [Info:DialogsModule] LocalDialogSearch,loadSHortDialogsFromCache
+[9:10:07.801] [Debug:ACS] Scheduling action ShortDialogsSlice/setShortDialogsLoading | 1
+[9:10:07.802] [Debug:ACS] Dispatching starved medium priority action: folders/setAreFoldersLoading
+[9:10:07.815] [Debug:ACS] modal/setIsModalManagerReady - dispatching immediately
+[9:10:07.822] [Debug:ACS] Scheduling action Promotion/GetInAppMessageData | 1
+[9:10:07.830] [Debug:FilesModule] Request Urls,[{"fileId":"","accessHash":"","fileStorageVersion":1}]
+[9:10:07.831] [Warn:EventsModule:New] Connection
+[9:10:07.832] [Error:EventsApi] Stream error,Connction not ok!
+[9:10:07.832] [Error:EventsModule:New] Subscribe Error,Connction not ok!
+[9:10:07.833] [Info:EventsApi] Cancel subscribe to updates, ID: ,1
+[9:10:07.836] [Debug:WS] ws handshake response,{"mkprotoVersion":1,"apiVersion":1,"serverTime":1789882820222}
+[9:10:07.837] [Warn:Core] state,2
+[9:10:07.838] [Info:Api] -> Req ChangeLanguage #0
+[9:10:07.843] [Debug:Status] isConnecting,2
+[9:10:07.843] [Debug:Status] current,isSyncing,next,isSyncing
+[9:10:07.844] [Debug:ACS] OtherSlice/appStatusChanged - dispatching immediately
+[9:10:07.846] [Debug:WS] ws,state,connected
+[9:10:07.847] [Info:Api] -> Req GetDiff #1
+[9:10:07.850] [Info:Api] -> Req GetFullGroup #2
+[9:10:07.851] [Info:Api] -> Req GetNasimFileUrls #3
+[9:10:07.853] [Debug:WS] Connected
+[9:10:07.860] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:07.864] [Debug:ACS] Scheduling action Contacts/setContacts | 1
+[9:10:07.957] [Info:DialogsModule] LocalDialogSearch,loadSHortDialogsFromCache,11
+[9:10:07.958] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:07.962] [Info:GroupModule] loadGroups,requiredGroups,[]
+[9:10:07.962] [Info:DialogsModule] LocalDialogSearch,loadSHortDialogs,getRequiredPeers,10,1
+[9:10:07.963] [Info:SearchEpic] LocalDialogSearch,getDialogsShortEpic 2,11,{"groups":[],"channels":[],"bots":[],"privates":[]}
+[9:10:07.963] [Debug:ACS] Scheduling action ShortDialogsSlice/dialogShortsReceived | 1
+[9:10:07.964] [Info:DialogsModule] LocalDialogSearch,getRequiredPeers,completed
+[9:10:08.103] [Debug:lazyModule] Module loaded:,flow,3777.0999999999767
+[9:10:08.107] [Info:lazyModuleMiddleware] Module "flow" loaded successfully
+[9:10:08.108] [Debug:lazyModuleMiddleware] Processing 1 queued actions for module "flow"
+[9:10:08.108] [Debug:lazyModuleMiddleware] Dispatching queued action: FeedMessages/loadFeedCategories
+[9:10:08.112] [Info:Api] -> Req LoadCategories #4
+[9:10:08.114] [Error:Api] -> Req GetFullGroup #2,{"code":5,"message":"GROUP_NOT_FOUND","displayMessage":"گفت‌وگوی موردنظر یافت نشد."}
+[9:10:08.145] [Info:Api] <- Res GetDiff #1
+[9:10:08.146] [Warn:stop trace] get_diff_request,{"app_version":"171248","duration":1786}
+[9:10:08.146] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_request","date":1789882808146}
+[9:10:08.147] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:08.152] [Info:GroupModule] loadGroups,requiredGroups,[]
+[9:10:08.155] [Warn:EventsModule:New] Processing group events from GetDiff response
+[9:10:08.156] [Warn:EventsModule:New] refresh too Long Routes,[]
+[9:10:08.157] [Debug:EventsModule:New] Filtered events for processing,["messageRead","parameterChanged","parameterChanged"]
+[9:10:08.158] [Debug:EventsModule:New] Processing events by,ConfigsModule
+[9:10:08.159] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:08.159] [Info:FoldersModule] folder events:,[]
+[9:10:08.160] [Debug:EventsModule:New] Processing events by,FoldersModule
+[9:10:08.160] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:08.161] [Debug:EventsModule:New] Processing events by,MessagingUpdatesHandler
+[9:10:08.161] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:08.162] [Debug:EventsModule:New] Processing events by,ImagesUpdatesHandler
+[9:10:08.162] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:08.163] [Info:EventsModule:New] GetDiff response,{"routesSize":3,"updatesSize":3,"routes":[{"routeId":0,"lastSeq":999,"needMore":false},{"routeId":1,"lastSeq":101006652,"needMore":false},{"routeId":255637216,"lastSeq":101469423,"needMore":false}]}
+[9:10:08.163] [Warn:EventsModule:New] >>>> GetDiff start applyEvents
+[9:10:08.164] [Warn:Firebase] newTrace,Firebase not initialized
+[9:10:08.164] [Debug:EventsModule:New] Starting to process events by,ConfigsModule
+[9:10:08.165] [Debug:EventsModule:New] Starting to process events by,FoldersModule
+[9:10:08.166] [Warn:stop trace] get_diff_apply_FoldersModule,{"app_version":"171248","duration":1}
+[9:10:08.166] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_apply_FoldersModule","date":1789882808166}
+[9:10:08.166] [Debug:EventsModule:New] Finished processing events by,FoldersModule
+[9:10:08.167] [Debug:EventsModule:New] Starting to process events by,MessagingUpdatesHandler
+[9:10:08.171] [Debug:EventsModule:New] Starting to process events by,ImagesUpdatesHandler
+[9:10:08.171] [Warn:stop trace] get_diff_apply_ImagesUpdatesHandler,{"app_version":"171248","duration":1}
+[9:10:08.172] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_apply_ImagesUpdatesHandler","date":1789882808172}
+[9:10:08.172] [Debug:EventsModule:New] Finished processing events by,ImagesUpdatesHandler
+[9:10:08.179] [Info:>>FilesLog] Download start,-3979
+[9:10:08.182] [Info:>>FilesLog] Download start,31981
+[9:10:08.183] [Info:>>FilesLog] Download start,33059
+[9:10:08.184] [Info:>>FilesLog] Download start,94410
+[9:10:08.185] [Info:>>FilesLog] Download start,-7574
+[9:10:08.186] [Info:>>FilesLog] Download start,29274
+[9:10:08.187] [Info:>>FilesLog] Download start,71343
+[9:10:08.189] [Info:>>FilesLog] Download start,26044
+[9:10:08.194] [Info:MessagingUpdatesHandler] readMessageUpdateHandler: dialog acquired,undefined
+[9:10:08.195] [Warn:MessagingUpdatesHandler] dialog not found on read message update,{"type":1,"id":1074131158}
+[9:10:08.197] [Info:Api] -> Req SetOnline #5
+[9:10:08.199] [Info:Api] <- Res GetNasimFileUrls #3
+[9:10:08.199] [Debug:FilesModule] Response Urls,{"fileLocations":[{"fileId":"","accessHash":"","fileStorageVersion":1}],"response":[{"fileId":"0","chunkSize":131072,"url":""}]}
+[9:10:08.207] [Info:Api] <- Res LoadCategories #4
+[9:10:08.207] [Warn:feed categories loaded] {"categories":[{"categoryId":0,"name":{"fa":{"text":""},"en":{"text":""}}},{"categoryId":1,"name":{"fa":{"text":"فروشگاهی"},"en":{"text":"store"}}},{"categoryId":2,"name":{"fa":{"text":"سرگرمی"},"en":{"text":"entertainment"}}},{"categoryId":3,"name":{"fa":{"text":"ورزشی"},"en":{"text":"sport"}}},{"categoryId":7,"name":{"fa":{"text":"سبک زندگی"},"en":{"text":"lifestyle"}}},{"categoryId":4,"name":{"fa":{"text":"خبری"},"en":{"text":"news"}}},{"categoryId":9,"name":{"fa":{"text":"علم و فناوری"},"en":{"text":"scientific"}}},{"categoryId":6,"name":{"fa":{"text":"مذهبی"},"en":{"text":"religious"}}},{"categoryId":5,"name":{"fa":{"text":"فرهنگ و هنر"},"en":{"text":"cultural"}}},{"categoryId":8,"name":{"fa":{"text":"آموزشی"},"en":{"text":"learning"}}}]}
+[9:10:08.208] [Info:MessagingUpdatesHandler] readMessageUpdateHandler: releasing dialog,1074131158
+[9:10:08.209] [Info:MessagingUpdatesHandler] peer events before reducing,[{}]
+[9:10:08.209] [Warn:MessagingUpdatesHandler] reducedDialogEvents,[]
+[9:10:08.210] [Warn:stop trace] get_diff_apply_MessagingUpdatesHandler,{"app_version":"171248","duration":43}
+[9:10:08.210] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_apply_MessagingUpdatesHandler","date":1789882808210}
+[9:10:08.211] [Debug:EventsModule:New] Finished processing events by,MessagingUpdatesHandler
+[9:10:08.214] [Debug:ACS] Scheduling action Settings/Received | 1
+[9:10:08.214] [Warn:stop trace] get_diff_apply_ConfigsModule,{"app_version":"171248","duration":50}
+[9:10:08.215] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_apply_ConfigsModule","date":1789882808215}
+[9:10:08.215] [Debug:EventsModule:New] Finished processing events by,ConfigsModule
+[9:10:08.215] [Debug:EventsModule:New] Process Finished
+[9:10:08.216] [Warn:EventsModule:New] >>>> GetDiff end applyEvents
+[9:10:08.216] [Warn:stop trace] get_diff_apply_events,{"app_version":"171248","duration":52}
+[9:10:08.216] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"get_diff_apply_events","date":1789882808216}
+[9:10:08.219] [Debug:ACS] Scheduling action Settings/Received | 1
+[9:10:08.219] [Info:>>AnbariStorageBucket] cache HIT,Avatars,-3979730739852009728
+[9:10:08.220] [Info:>>AnbariStorageBucket] cache HIT,Avatars,3198102689826414339
+[9:10:08.220] [Info:>>AnbariStorageBucket] cache HIT,Avatars,3305914392532492035
+[9:10:08.221] [Info:>>AnbariStorageBucket] cache HIT,Avatars,944105074498543362
+[9:10:08.221] [Info:>>AnbariStorageBucket] cache HIT,Avatars,-7574576052818862334
+[9:10:08.221] [Info:>>AnbariStorageBucket] cache HIT,Avatars,2927422819853213443
+[9:10:08.222] [Info:>>AnbariStorageBucket] cache HIT,Avatars,2604438737596653315
+[9:10:08.223] [Info:>>AnbariStorageBucket] cache HIT,Avatars,7134328984016527104
+[9:10:08.223] [Info:>>AnbariDownloadManager] Called download for -3979730739852009728 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 3198102689826414339 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 3305914392532492035 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 944105074498543362 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for -7574576052818862334 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 2927422819853213443 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 2604438737596653315 with status: Cached
+[9:10:08.224] [Info:>>AnbariDownloadManager] Called download for 7134328984016527104 with status: Cached
+[9:10:08.268] [Warn:EventsModule:New] >>>> GetDiff end apply Seqs
+[9:10:08.268] [Info:EventsModule:New] GetDiff Finished
+[9:10:08.269] [Debug:Status] isSyncing,false
+[9:10:08.269] [Debug:Status] current,isSyncing,next,Ok
+[9:10:08.269] [Debug:ACS] OtherSlice/appStatusChanged - dispatching immediately
+[9:10:08.273] [Debug:EventsModule:New] Queue size:,0
+[9:10:08.273] [Warn:stop trace] initial_get_diff,{"app_version":"171248","duration":1915}
+[9:10:08.273] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"initial_get_diff","date":1789882808273}
+[9:10:08.283] [Info:>>FilesLog] Download file fetch,-3979,size,3017
+[9:10:08.287] [Info:>>FilesLog] Download file fetch,31981,size,3454
+[9:10:08.291] [Info:>>FilesLog] Download file fetch,33059,size,7972
+[9:10:08.295] [Info:>>FilesLog] Download file fetch,94410,size,3641
+[9:10:08.299] [Info:>>FilesLog] Download file fetch,-7574,size,4651
+[9:10:08.303] [Info:>>FilesLog] Download file fetch,29274,size,4663
+[9:10:08.308] [Info:>>FilesLog] Download file fetch,26044,size,4651
+[9:10:08.311] [Info:>>FilesLog] Download file fetch,71343,size,7979
+[9:10:08.323] [Info:Api] <- Res SetOnline #5
+[9:10:08.331] [Info:Api] <- Res ChangeLanguage #0
+[9:10:08.332] [Warn:stop trace] web_connection_time,{"app_version":"171248","mode":"ws","duration":2057}
+[9:10:08.332] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_connection_time","date":1789882808332}
+[9:10:08.332] [Warn:Core] ws,start,opened
+[9:10:08.332] [Warn:ConfigsModule] start
+[9:10:08.405] [Debug:ACS] Scheduling action notifications/setShowNotificationGuide | 1
+[9:10:08.406] [Debug:ACS] Dispatching Story/GetStories
+[9:10:08.411] [Info:Api] -> Req GetStories #6
+[9:10:08.412] [Info:Api] -> Req GetChannelStories #7
+[9:10:08.413] [Info:Api] -> Req GetMostPopularStories #8
+[9:10:08.414] [Debug:ACS] Scheduling action StorySlice/setLastGetStoriesTime | 1
+[9:10:08.414] [Debug:ACS] Scheduling action StorySlice/setLoading | 1
+[9:10:08.415] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.415] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.415] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.415] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.416] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.416] [Debug:ACS] Scheduling action StorySlice/setShow | 1
+[9:10:08.418] [Debug:ACS] Scheduling action Settings/Received | 1
+[9:10:08.420] [Debug:ACS] Dispatching Story/GetStories
+[9:10:08.423] [Info:Api] -> Req GetStories #9
+[9:10:08.424] [Info:Api] -> Req GetChannelStories #10
+[9:10:08.425] [Info:Api] -> Req GetMostPopularStories #11
+[9:10:08.426] [Debug:ACS] Scheduling action StorySlice/setLastGetStoriesTime | 1
+[9:10:08.426] [Debug:ACS] Scheduling action StorySlice/setLoading | 1
+[9:10:08.428] [Debug:ACS] Dispatching Meet/GetOnGoingCalls
+[9:10:08.432] [Info:Api] -> Req GetOngoingCalls #12
+[9:10:08.435] [Debug:ACS] Dispatching Meet/setSelectCallLogs
+[9:10:08.440] [Debug:ACS] Dispatching growth/emptyStates/GetBotsData
+[9:10:08.443] [Debug:ACS] Scheduling action growth/emptyStates/setBots | 1
+[9:10:08.443] [Debug:ACS] Scheduling action growth/emptyStates/setLoading | 1
+[9:10:08.443] [Debug:ACS] Dispatching marketing/fetchAllTools
+[9:10:08.447] [Debug:ACS] Dispatching Contacts/setContactsLoading
+[9:10:08.450] [Debug:ACS] Dispatching ShortDialogsSlice/setShortDialogsLoading
+[9:10:08.454] [Debug:ACS] Dispatching Promotion/GetInAppMessageData
+[9:10:08.457] [Error:Promotions] no in-app data found
+[9:10:08.457] [Debug:ACS] Scheduling action Promotions/InAppMessage/startInAppMessage | 1
+[9:10:08.458] [Debug:ACS] Dispatching Contacts/setContacts
+[9:10:08.508] [Info:Api] <- Res GetMostPopularStories #11
+[9:10:08.509] [Info:Api] <- Res GetOngoingCalls #12
+[9:10:08.509] [Debug:Meet: Common Epics -> getOnGoingCalls] []
+[9:10:08.510] [Info:Api] <- Res GetStories #9
+[9:10:08.511] [Info:Api] <- Res GetChannelStories #10
+[9:10:08.511] [Debug:StoryEpics] 0,0,0
+[9:10:08.512] [Debug:ACS] Scheduling action StorySlice/setStories | 1
+[9:10:08.512] [Debug:ACS] Scheduling action StorySlice/setMostPopularStories | 1
+[9:10:08.513] [Debug:ACS] Scheduling action StorySlice/setIsStoriesFetched | 1
+[9:10:08.513] [Debug:ACS] Scheduling action Story/RemoveOutdatedStories | 1
+[9:10:08.513] [Debug:ACS] Scheduling action Story/PreloadFirstStories | 1
+[9:10:08.523] [Debug:ACS] Dispatching ShortDialogsSlice/dialogShortsReceived
+[9:10:08.527] [Debug:ACS] Dispatching Settings/Received
+[9:10:08.544] [Debug:ACS] Dispatching Settings/Received
+[9:10:08.547] [Debug:ACS] Dispatching notifications/setShowNotificationGuide
+[9:10:08.548] [Debug:ACS] Dispatching StorySlice/setLastGetStoriesTime
+[9:10:08.549] [Debug:ACS] Dispatching StorySlice/setLoading
+[9:10:08.551] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.552] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.554] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.555] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.556] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.557] [Debug:ACS] Dispatching StorySlice/setShow
+[9:10:08.559] [Debug:ACS] Dispatching Settings/Received
+[9:10:08.560] [Debug:ACS] Dispatching StorySlice/setLastGetStoriesTime
+[9:10:08.560] [Debug:ACS] Dispatching StorySlice/setLoading
+[9:10:08.561] [Debug:ACS] Dispatching growth/emptyStates/setBots
+[9:10:08.563] [Info:OnboardingEmptyState] Loading avatars for 5 bots,["583920174","716284935","429815673","648392715","864203591"]
+[9:10:08.564] [Debug:Load User Req] [{"uid":583920174,"accessHash":"1"},{"uid":716284935,"accessHash":"1"},{"uid":429815673,"accessHash":"1"},{"uid":864203591,"accessHash":"1"}]
+[9:10:08.564] [Info:Api] -> Req LoadUsers #13
+[9:10:08.565] [Debug:ACS] Users/setUsers - dispatching immediately
+[9:10:08.567] [Debug:ACS] Dispatching growth/emptyStates/setLoading
+[9:10:08.569] [Debug:ACS] Dispatching Promotions/InAppMessage/startInAppMessage
+[9:10:08.570] [Debug:ACS] Dispatching StorySlice/setStories
+[9:10:08.572] [Info:GroupModule] loadGroups,requiredGroups,[]
+[9:10:08.573] [Debug:ACS] Dispatching StorySlice/setMostPopularStories
+[9:10:08.574] [Info:GroupModule] loadGroups,requiredGroups,[]
+[9:10:08.575] [Debug:ACS] Dispatching StorySlice/setIsStoriesFetched
+[9:10:08.576] [Debug:ACS] Dispatching Story/RemoveOutdatedStories
+[9:10:08.577] [Debug:ACS] Dispatching Story/PreloadFirstStories
+[9:10:08.578] [Debug:ACS] Scheduling action Story/DownloadStoriesByIDs | 1
+[9:10:08.579] [Debug:ACS] Dispatching Story/DownloadStoriesByIDs
+[9:10:08.580] [Debug:ACS] Dispatching FlowMagazine/getUpvoteMessages
+[9:10:08.581] [Info:Api] -> Req GetMyUpvotes #14
+[9:10:08.582] [Debug:ACS] Scheduling action FlowMagazine/setUpvoteLoading | 1
+[9:10:08.582] [Debug:ACS] Dispatching Advertisement/GetDialogAdWithInterval
+[9:10:08.584] [Debug:ACS] Dispatching Advertisement/NextDialogAdWithThrottle
+[9:10:08.597] [Debug:ACS] Scheduling action Advertisement/GetAd | 0
+[9:10:08.615] [Info:Api] <- Res LoadUsers #13
+[9:10:08.616] [Debug:ACS] Scheduling action growth/emptyStates/setBotUserData | 1
+[9:10:08.683] [Info:Api] <- Res GetMyUpvotes #14
+[9:10:08.684] [Debug:ACS] Scheduling action FlowMagazine/setUpvoteMessages | 1
+[9:10:08.685] [Debug:ACS] Scheduling action marketing/fetchAllToolsStart | 1
+[9:10:08.686] [Info:Api] -> Req GetMarketingToolsConfig #15
+[9:10:08.698] [Debug:ACS] Dispatching FlowMagazine/setUpvoteLoading
+[9:10:08.703] [Debug:ACS] Dispatching growth/emptyStates/setBotUserData
+[9:10:08.706] [Debug:ACS] Dispatching FlowMagazine/setUpvoteMessages
+[9:10:08.726] [Debug:ACS] Dispatching marketing/fetchAllToolsStart
+[9:10:08.729] [Debug:ACS] Dispatching Advertisement/GetAd
+[9:10:08.732] [Info:Api] -> Req GetAdProvider #16
+[9:10:08.753] [Info:Api] <- Res GetMarketingToolsConfig #15
+[9:10:08.754] [Debug:ACS] Scheduling action marketing/fetchAllToolsSuccess | 1
+[9:10:08.755] [Debug:ACS] Dispatching marketing/fetchAllToolsSuccess
+[9:10:09.820] [Info:Api] <- Res GetAdProvider #16
+[9:10:09.820] [Info:DialogAd Epic] Ad content: ,[{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"1132596341834718976","accessHash":"123","fileStorageVersion":1},"width":1080,"height":1080,"fileSize":155978},"title":"🪙 طلا رو آنلاین بخر!","description":"خرید و فروش ۲۴ساعته در بله","link":"https://ble.ir/GoldBot?start=213","id":"91cdaf72-87c4-4159-bfce-3940e0b809be@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"","peer":{"type":4,"id":513133114,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"1358826740793155328","accessHash":"123","fileStorageVersion":1},"width":566,"height":583,"fileSize":788779},"title":"شمش طلا فقط ۱٪","description":"آسان و سریع طلا بخر 🤩","link":"ble.ir/join/7BPtoRJ5QZ","id":"7ba0b24e-734f-4c0d-9b56-2d36403628fd@1789882823063251175","accessHash":"0","tag1":2,"tag2":217,"linkTitle":"عضویت","peer":{"type":3,"id":331743561,"accessHash":"0"},"ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-8539905053327155454","accessHash":"123","fileStorageVersion":1},"width":387,"height":395,"fileSize":397514},"title":"طلا از کجا می‌‍‌خری؟ 🤩","description":"خرید آسان طلا + ارسال رایگان","link":"ble.ir/join/7BPtoRJ5QZ","id":"83cd60ff-f770-49af-8078-8f087d5f59dd@1789882823063251175","accessHash":"0","tag1":2,"tag2":0,"linkTitle":"عضویت","peer":{"type":3,"id":331743561,"accessHash":"0"},"ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-3319232514774982910","accessHash":"123","fileStorageVersion":1},"width":436,"height":436,"fileSize":19526},"title":"کامپوزیت و ایمپلنت سرو😍","description":"رایگان بیا تهران 🦷 اقساط بلند‌مدت","link":"https://ble.ir/sarv_smile","id":"8a7a795e-4dab-43d9-8c65-c5587a49e5f3-campaign@1789882823063251175","accessHash":"0","tag1":5,"tag2":0,"linkTitle":"","peer":{"type":3,"id":1949984317,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"4702630517688704769","accessHash":"123","fileStorageVersion":1},"width":1000,"height":1000,"fileSize":44868},"title":"کامپوزیت مشابه لمینت 💎","description":"رایگان بیا تهران 🦷 اقساط بلند‌مدت","link":"https://ble.ir/sarv_smile_dent","id":"d1e342e1-57bb-4ba1-befc-944a224fc6e3-campaign@1789882823063251175","accessHash":"0","tag1":5,"tag2":0,"linkTitle":"","peer":{"type":3,"id":1540470539,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"2914649054148566786","accessHash":"123","fileStorageVersion":1},"width":724,"height":631,"fileSize":54314},"title":"با بهترین شرایط ۹۱۲ بخر!","description":"خریدوفروش انواع خطوط ۹۱۲","link":"https://ble.ir/rondino_912","id":"f56454be-39c6-4fe4-99e5-507ce7a16274@1789882823063251175","accessHash":"0","tag1":1,"tag2":104,"linkTitle":"","peer":{"type":3,"id":1608338605,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"6946470938284531458","accessHash":"123","fileStorageVersion":1},"width":1080,"height":1080,"fileSize":133113},"title":"بله؛ برای سرمایه‌گذاری🤩","description":"هر روز سود بگیر؛ هر وقت خواستی بردار!","link":"https://ble.ir/GoldBot?start=214","id":"5e235375-0df6-46f2-accf-2b25a3464c65@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"","peer":{"type":4,"id":513133114,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-3324295138345148672","accessHash":"123","fileStorageVersion":1},"width":945,"height":945,"fileSize":61557},"title":"دندون از دست دادی؟😱🦷","description":"رایگان بیا تهران و ایمپلنت بذار","link":"https://ble.ir/sarvdent","id":"6400e1c4-f911-46e5-98de-9e4b4deca350-campaign@1789882823063251175","accessHash":"0","tag1":5,"tag2":0,"linkTitle":"","peer":{"type":3,"id":119298414,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-7186142771272016125","accessHash":"123","fileStorageVersion":1},"width":1254,"height":1254,"fileSize":782121},"title":"اینترنت با مودم قسطی 🚀","description":"⏳ فقط امروز؛ اینترنت با 600 ت تخفیف","link":"https://ble.ir/pishgaman_official","id":"Jaryan#bale_YDmbZNLj@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"مشاهده","ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-1495019115938898173","accessHash":"123","fileStorageVersion":1},"width":800,"height":800,"fileSize":25130},"title":"یخچال و تلویزیون اقساطی","description":"تا ۲۴ ماه اقساط حتی بدون پیش‌پرداخت","link":"https://ble.ir/entekhabemanofficial","id":"ad17fc86-29fd-4c0e-a2a4-a515e2ac4cdd-campaign@1789882823063251175","accessHash":"0","tag1":6,"tag2":0,"linkTitle":"","peer":{"type":3,"id":1823083831,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"2770815884265987840","accessHash":"123","fileStorageVersion":1},"width":1000,"height":593,"fileSize":46711},"title":"آخ پاییزه و لباساش❤️","description":"بامبر، کت، کاپشن، بافت و ست پاییزه","link":"https://ble.ir/pushakkadeh_1","id":"f457583c-2968-4ad4-a23d-ac611233fdb8-campaign@1789882823063251175","accessHash":"0","tag1":2,"tag2":204,"linkTitle":"","peer":{"type":3,"id":1665897200,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-4537932474580197632","accessHash":"123","fileStorageVersion":1},"width":800,"height":800,"fileSize":25130},"title":"گوشی و لپ‌تاپ اقساطی","description":"اقساط ۲۴ ماهه بدون پیش‌پرداخت","link":"https://ble.ir/entekhabemanofficial","id":"feb8c33c-015b-4498-9fff-dcae944ed933-campaign@1789882823063251175","accessHash":"0","tag1":2,"tag2":214,"linkTitle":"","peer":{"type":3,"id":1823083831,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-8377396967620993280","accessHash":"123","fileStorageVersion":1},"width":1000,"height":1000,"fileSize":224369},"title":"سجاده زیلو بیت رهبری ✨","description":"خرید دستبافت ایرانی با ارسال رایگان","link":"https://ble.ir/rabi_ir/5764514792142914654/1787686840538","id":"5b12267d-7ade-4ac4-9968-bc3946a9abce@1789882823063251175","accessHash":"0","tag1":2,"tag2":212,"linkTitle":"","peer":{"type":3,"id":829712721,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"2552962553946906371","accessHash":"123","fileStorageVersion":1},"width":1000,"height":1000,"fileSize":76375},"title":"۹۱۲ رو از مرکزش بخر 💎","description":"خرید ۹۱۲ با اقساط بلندمدت بدون چک🌱","link":"https://ble.ir/samasim912/-6463078077445053492/1788699588149","id":"18d1aeba-0aa3-4034-9174-a43e0c2a8ea1@1789882823063251175","accessHash":"0","tag1":1,"tag2":104,"linkTitle":"","peer":{"type":3,"id":994523396,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-2801942616511537407","accessHash":"123","fileStorageVersion":1},"width":799,"height":1000,"fileSize":128046},"title":"مبلمان جلیس گستر 🛋","description":"تعویض مبل کارکرده با مبل نو😍","link":"https://ble.ir/jalisgostar/-268775746269242352/1789151483548","id":"6f8b25de-c193-4778-aff4-61b4aa58443e-campaign@1789882823063251175","accessHash":"0","tag1":6,"tag2":0,"linkTitle":"","peer":{"type":3,"id":1100646792,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-6980728845950247165","accessHash":"123","fileStorageVersion":1},"width":1254,"height":1254,"fileSize":2089247},"title":"از تهران تا هر استان","description":"ظریف بار،ایمن ترین باربری","link":"https://ble.ir/join/HqnuseCsmq","id":"Jaryan#bale_a43cAIMK@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"مشاهده","ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-7990709297702166783","accessHash":"123","fileStorageVersion":1},"width":512,"height":512,"fileSize":22757},"title":"املاک خوش‌زبان صومعه‌سرا","description":"بهترین فایلینگ زمین و ویلای منطقه","link":"https://ble.ir/khoshzabanamlak","id":"3297df8f-e57a-4954-be71-0810395da530@1789882823063251175","accessHash":"0","tag1":1,"tag2":102,"linkTitle":"","peer":{"type":3,"id":2096017636,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"5273411366704979715","accessHash":"123","fileStorageVersion":1},"width":686,"height":950,"fileSize":68041},"title":"۰ تا ۱۰۰ آلمانی در ۶ ماه","description":"پشتیبانی و گارانتی عودت وجه","link":"https://ble.ir/germanterm_gt","id":"5cfc7001-bcea-4d6b-89e7-3cb0c709bad0@1789882823063251175","accessHash":"0","tag1":3,"tag2":301,"linkTitle":"","peer":{"type":3,"id":1482040875,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-5866195919994282238","accessHash":"123","fileStorageVersion":1},"width":1000,"height":1000,"fileSize":32103},"title":"طراحی سایت و اپلیکیشن","description":"شرکت ایران اپکو، طراحی سایت و اپ","link":"https://ble.ir/irappco","id":"5e6d6b50-a9fe-4603-9b1b-a1988b447b83@1789882823063251175","accessHash":"0","tag1":1,"tag2":104,"linkTitle":"","peer":{"type":3,"id":998370080,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"8890926444375187201","accessHash":"123","fileStorageVersion":1},"width":1254,"height":1254,"fileSize":2089247},"title":"ظریف بار ، یک قرن تجربه","description":"اسباب کشی شبانه روزی و VIP","link":"https://ble.ir/join/HqnuseCsmq","id":"Jaryan#bale_giAfT8G3@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"مشاهده","ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-3729066287472828669","accessHash":"123","fileStorageVersion":1},"width":887,"height":1000,"fileSize":96352},"title":"استودیو هوش مصنوعی بوق","description":"دوبله، پادکست، تصویر و ویدیو با هوش","link":"https://booqai.app","id":"b4d47374-e9fa-4cce-b6d5-758c21f1b320@1789882823063251175","accessHash":"0","tag1":1,"tag2":104,"linkTitle":"","ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"5235546421844844290","accessHash":"123","fileStorageVersion":1},"width":750,"height":1000,"fileSize":66228},"title":"کامپوزیت لبه شیشه‌ای ۲.۵","description":"کامپوزیت لبه شیشه‌ای با اقساط ویژه","link":"https://homina.ir/composit/","id":"d5b37580-7436-483d-8a17-6dac92087559@1789882823063251175","accessHash":"0","tag1":5,"tag2":0,"linkTitle":"","ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-3194151226789060863","accessHash":"123","fileStorageVersion":1},"width":1000,"height":562,"fileSize":30010},"title":"فکر می‌کنی سطح زبانت چیه؟","description":"فقط ۱۰ دقیقه برای سنجش زبانت!","link":"https://ble.ir/ViraaEnglishbot","id":"23fd212c-9949-458a-a2a3-3aadd152a942@1789882823063251175","accessHash":"0","tag1":3,"tag2":301,"linkTitle":"","peer":{"type":4,"id":655700059,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-7639831857421476096","accessHash":"123","fileStorageVersion":1},"width":256,"height":256,"fileSize":26114},"title":"نرم افزارحسابداری حسیب نت","description":"ویژه تکثیر جزوه 📚📘","link":"https://ble.ir/hasibnet/30466396623360304/1738576136536","id":"33f2a33b-4fa3-4040-9ec2-888f96e838b8@1789882823063251175","accessHash":"0","tag1":1,"tag2":101,"linkTitle":"","peer":{"type":3,"id":1605761890,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"-6486301501100450048","accessHash":"123","fileStorageVersion":1},"width":1080,"height":1080,"fileSize":205436},"title":"واریز و برداشت در هر زمان","description":"📱 سرمایه‌گذاری بدون حساب بانکی","link":"https://ble.ir/GoldBot?start=212","id":"0fbd51d9-81f8-4569-b3cf-8b5d36be0d11@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"","peer":{"type":4,"id":513133114,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"5879326328354643713","accessHash":"123","fileStorageVersion":1},"width":1000,"height":639,"fileSize":32771},"title":"مطمئناً نیازت می‌شه!","description":"سرفیس از اوجب واجبات امروز ماست","link":"https://ble.ir/shemrounshop/-3985195731995610730/1789304572989","id":"2647e66d-2dc7-4753-8992-253d536e7761@1789882823063251175","accessHash":"0","tag1":2,"tag2":214,"linkTitle":"","peer":{"type":3,"id":614196298,"accessHash":"0"},"ownerType":0}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"1730857431532707587","accessHash":"123","fileStorageVersion":1},"width":1080,"height":1080,"fileSize":48258},"title":"در جانبو با کالابرگ بخر","description":"15٪ تخفیف بیشتر ببر!","link":"https://ble.ir/canbochainstore","id":"Jaryan#bale_v44RcIKb@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"مشاهده","ownerType":1}},{"baleCustomAd":{"pic":"","imageLocation":{"fileLocation":{"fileId":"3037318624945315587","accessHash":"123","fileStorageVersion":1},"width":1080,"height":1080,"fileSize":48258},"title":"در جانبو با کالابرگ بخر","description":"15٪ تخفیف بیشتر ببر!","link":"https://ble.ir/canbochainstore","id":"Jaryan#bale_fxtVtEzq@1789882823063251175","accessHash":"0","tag1":0,"tag2":0,"linkTitle":"مشاهده","ownerType":1}}]
+[9:10:09.830] [Debug:ACS] Scheduling action Advertisement/setDialogAdPlacements | 0
+[9:10:09.830] [Debug:ACS] Scheduling action Advertisement/getNextDialogAd | 0
+[9:10:09.830] [Debug:ACS] Scheduling action Advertisement/PreloadNextDialogAd | 0
+[9:10:09.840] [Debug:ACS] Dispatching Advertisement/setDialogAdPlacements
+[9:10:09.880] [Debug:ACS] Dispatching Advertisement/getNextDialogAd
+[9:10:09.910] [Debug:ACS] Dispatching Advertisement/PreloadNextDialogAd
+[9:10:09.125] [Debug:ACS] Scheduling action Advertisement/DialogAdViewed | 0
+[9:10:09.127] [Debug:ACS] Dispatching Advertisement/DialogAdViewed
+[9:10:09.130] [Debug:Seraj Log Analytics Event] ad_dialogue_view,{"ad_item_provider":"bale","ad_item_state":"web","ad_item_id":"91cdaf72-87c4-4159-bfce-3940e0b809be@1789882823063251175","ad_item_title":"🪙 طلا رو آنلاین بخر!","tag_1":0,"tag_2":0,"link_title":"","action_type":1,"peer_type":"channel","peer_id":513133114}
+[9:10:09.130] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"ad_dialogue_view","date":1789882809130}
+[9:10:09.131] [Info:Api] -> Req UpdateView #17
+[9:10:09.186] [Debug:FilesModule] Request Urls,[{"fileId":"1132596341834718976","accessHash":"123","fileStorageVersion":1},{"fileId":"1132596341834718976","accessHash":"123","fileStorageVersion":1}]
+[9:10:09.186] [Info:Api] -> Req GetNasimFileUrls #18
+[9:10:09.210] [Info:Api] <- Res UpdateView #17
+[9:10:09.274] [Info:Api] <- Res GetNasimFileUrls #18
+[9:10:09.274] [Debug:FilesModule] Response Urls,{"fileLocations":[{"fileId":"1132596341834718976","accessHash":"123","fileStorageVersion":1},{"fileId":"1132596341834718976","accessHash":"123","fileStorageVersion":1}],"response":[{"fileId":"1132596341834718976","chunkSize":131072,"url":"https://file-gw5.ble.ir/proxy_download/R7skaptFVM3"}]}
+[9:10:09.835] [Warn:EventsModule:New] Connection
+[9:10:17.855] [Debug:WS] ws ping,0
+[9:10:17.914] [Debug:WS] ws pong,0
+[9:10:19.808] [Debug:PowerSavingManager] battery,{}
+[9:10:20.726] [Debug:Performance] Memory usage:,0,{}
+[9:10:20.727] [Debug:Seraj Log Analytics Event] web_memory_measurment,{"value":47,"total":73,"browser":"Chrome","platform":"Windows","session_id":"3009239209458600054"}
+[9:10:20.727] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_memory_measurment","date":1789882820727}
+[9:10:27.855] [Debug:WS] ws ping,1
+[9:10:27.908] [Debug:WS] ws pong,1
+[9:10:31.911] [Debug:Performance] Memory usage:,0,{}
+[9:10:31.912] [Debug:Seraj Log Analytics Event] web_memory_measurment,{"value":48,"total":73,"browser":"Chrome","platform":"Windows","session_id":"3009239209458600054"}
+[9:10:31.912] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_memory_measurment","date":1789882831912}
+[9:10:36.274] [Info:SerajEventModule] sending batch,{"count":5,"shouldRetry":false,"eventNames":["navigation_select_tab","get_diff_apply_events","initial_get_diff","web_connection_time","ad_dialogue_view"]}
+[9:10:36.276] [Info:Api] -> Req SendBatch #19
+[9:10:36.364] [Info:Api] <- Res SendBatch #19
+[9:10:36.365] [Info:SerajEventModule] batch send completed,{"count":5,"ok":true}
+[9:10:37.787] [Debug:Set Presence Status AppVisibilityChange] false
+[9:10:37.788] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:37.788] [Debug:Seraj Log Analytics Event] time_in_app,{"duration_seconds":"31.1","duration":31}
+[9:10:37.788] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"time_in_app","date":1789882837788}
+[9:10:37.793] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:37.856] [Debug:WS] ws ping,2
+[9:10:37.917] [Debug:WS] ws pong,2
+[9:10:38.980] [Info:Api] -> Req SetOnline #20
+[9:10:38.100] [Debug:Set Presence Status AppVisibilityChange] true
+[9:10:38.101] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:38.106] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:38.189] [Info:Api] <- Res SetOnline #20
+[9:10:38.411] [Info:Api] -> Req SetOnline #21
+[9:10:38.497] [Info:Api] <- Res SetOnline #21
+[9:10:38.636] [Debug:Set Presence Status AppVisibilityChange] false
+[9:10:38.636] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:38.636] [Debug:Seraj Log Analytics Event] time_in_app,{"duration_seconds":"0.535","duration":0}
+[9:10:38.637] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"time_in_app","date":1789882838637}
+[9:10:38.640] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:38.889] [Debug:Set Presence Status AppVisibilityChange] true
+[9:10:38.890] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:38.892] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:39.196] [Info:Api] -> Req SetOnline #22
+[9:10:39.334] [Info:Api] <- Res SetOnline #22
+[9:10:41.335] [Debug:ACS] StorySlice/setStoryRowVisible - dispatching immediately
+[9:10:42.189] [Debug:Set Presence Status AppVisibilityChange] false
+[9:10:42.190] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:42.190] [Debug:Seraj Log Analytics Event] time_in_app,{"duration_seconds":"3.3","duration":3}
+[9:10:42.190] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"time_in_app","date":1789882842190}
+[9:10:42.192] [Debug:Seraj Log Analytics Event] web_vitals_CLS,{"value":0,"delta":0,"url":"/"}
+[9:10:42.193] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_vitals_CLS","date":1789882842193}
+[9:10:42.199] [Debug:Seraj Log Analytics Event] web_vitals_LCP,{"value":2912,"delta":2912,"url":"/"}
+[9:10:42.214] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"web_vitals_LCP","date":1789882842214}
+[9:10:42.241] [Info:LongSession] [hidden] document visibility : true,
+          unfocused: 0s/1800s,
+          open: 36s/21600s,
+          memory: 42MB/350MB
+[9:10:42.403] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:42.713] [Info:Api] -> Req SetOnline #23
+[9:10:42.766] [Info:Api] <- Res SetOnline #23
+[9:10:44.230] [Info:LongSession] [visible] document visibility : false,
+          unfocused: 2s/1800s,
+          open: 38s/21600s,
+          memory: 42MB/350MB
+[9:10:44.248] [Debug:Set Presence Status AppVisibilityChange] true
+[9:10:44.248] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:44.249] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:44.554] [Info:Api] -> Req SetOnline #24
+[9:10:44.612] [Info:Api] <- Res SetOnline #24
+[9:10:47.864] [Debug:WS] ws ping,3
+[9:10:47.925] [Debug:WS] ws pong,3
+[9:10:48.900] [Debug:Set Presence Status AppVisibilityChange] false
+[9:10:48.901] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:10:48.901] [Debug:Seraj Log Analytics Event] time_in_app,{"duration_seconds":"4.653","duration":4}
+[9:10:48.901] [Debug:SerajEventModule] sendSerajEvent received,{"eventName":"time_in_app","date":1789882848901}
+[9:10:48.903] [Debug:ACS] Dispatching Presence/SetOnline
+[9:10:48.912] [Info:LongSession] [hidden] document visibility : true,
+          unfocused: 0s/1800s,
+          open: 43s/21600s,
+          memory: 43MB/350MB
+[9:10:49.212] [Info:Api] -> Req SetOnline #25
+[9:10:49.316] [Info:Api] <- Res SetOnline #25
+[9:10:57.858] [Debug:WS] ws ping,4
+[9:10:57.905] [Debug:WS] ws pong,4
+[9:11:07.863] [Debug:WS] ws ping,5
+[9:11:07.922] [Debug:WS] ws pong,5
+[9:11:17.867] [Debug:WS] ws ping,6
+[9:11:17.926] [Debug:WS] ws pong,6
+[9:11:27.870] [Debug:WS] ws ping,7
+[9:11:27.926] [Debug:WS] ws pong,7
+[9:11:32.461] [Debug:Set Presence Online/Offline by 30 seconds inactive] false
+[9:11:32.462] [Debug:ACS] Scheduling action Presence/SetOnline | 1
+[9:11:32.463] [Debug:ACS] Dispatching Presence/SetOnline
+[9:11:32.769] [Info:Api] -> Req SetOnline #26
+[9:11:32.809] [Info:Api] <- Res SetOnline #26
+[9:11:37.854] [Debug:WS] ws ping,8
+[9:11:37.907] [Debug:WS] ws pong,8
+[9:11:47.854] [Debug:WS] ws ping,9
+[9:11:47.925] [Debug:WS] ws pong,9
+[9:11:57.866] [Debug:WS] ws ping,10
+[9:11:57.966] [Debug:WS] ws pong,10
+[9:12:07.862] [Debug:WS] ws ping,11
+[9:12:07.925] [Debug:WS] ws pong,11
+[9:12:17.858] [Debug:WS] ws ping,12
+[9:12:17.928] [Debug:WS] ws pong,12
+[9:12:27.855] [Debug:WS] ws ping,13
+[9:12:27.920] [Debug:WS] ws pong,13
+[9:12:37.867] [Debug:WS] ws ping,14
+[9:12:37.925] [Debug:WS] ws pong,14
+[9:12:47.855] [Debug:WS] ws ping,15
+[9:12:47.932] [Debug:WS] ws pong,15
+[9:12:57.860] [Debug:WS] ws ping,16
+[9:12:57.906] [Debug:WS] ws pong,16
+[9:13:07.862] [Debug:WS] ws ping,17
+[9:13:07.936] [Debug:WS] ws pong,17
+[9:13:17.859] [Debug:WS] ws ping,18
+[9:13:17.908] [Debug:WS] ws pong,18
+[9:13:27.863] [Debug:WS] ws ping,19
+[9:13:27.928] [Debug:WS] ws pong,19
+[9:13:37.867] [Debug:WS] ws ping,20
+[9:13:38.900] [Debug:WS] ws pong,20
+[9:13:47.859] [Debug:WS] ws ping,21
+[9:13:47.908] [Debug:WS] ws pong,21
+[9:13:57.864] [Debug:WS] ws ping,22
+[9:13:57.977] [Debug:WS] ws pong,22
+[9:14:07.864] [Debug:WS] ws ping,23
+[9:14:07.927] [Debug:WS] ws pong,23
+[9:14:17.855] [Debug:WS] ws ping,24
+[9:14:17.905] [Debug:WS] ws pong,24
+[9:14:27.864] [Debug:WS] ws ping,25
+[9:14:27.934] [Debug:WS] ws pong,25
+[9:14:37.865] [Debug:WS] ws ping,26
+[9:14:38.160] [Debug:WS] ws pong,26
+[9:14:47.859] [Debug:WS] ws ping,27
+[9:14:47.917] [Debug:WS] ws pong,27
+[9:14:57.854] [Debug:WS] ws ping,28
+[9:14:57.909] [Debug:WS] ws pong,28
+[9:15:07.853] [Debug:WS] ws ping,29
+[9:15:07.916] [Debug:WS] ws pong,29
+[9:15:17.861] [Debug:WS] ws ping,30
+[9:15:17.908] [Debug:WS] ws pong,30
+[9:15:27.856] [Debug:WS] ws ping,31
+[9:15:27.910] [Debug:WS] ws pong,31
+[9:15:37.853] [Debug:WS] ws ping,32
+[9:15:37.917] [Debug:WS] ws pong,32
+[9:15:47.867] [Debug:WS] ws ping,33
+[9:15:47.952] [Debug:WS] ws pong,33
+[9:15:57.865] [Debug:WS] ws ping,34
+[9:15:57.931] [Debug:WS] ws pong,34
+[9:16:07.857] [Debug:WS] ws ping,35
+[9:16:07.921] [Debug:WS] ws pong,35
+[9:16:17.865] [Debug:WS] ws ping,36
+[9:16:17.926] [Debug:WS] ws pong,36
+[9:16:27.860] [Debug:WS] ws ping,37
+[9:16:27.920] [Debug:WS] ws pong,37
