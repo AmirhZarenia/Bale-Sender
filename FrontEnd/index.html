@@ -2094,12 +2094,12 @@
 
                     <div id="campaignEstimate" class="campaign-estimate">
                         <div><span>روزهای فعال در بازه</span><strong id="estimateDays">--</strong></div>
-                        <div><span>حداقل کل ارسال</span><strong id="estimateMin">--</strong></div>
-                        <div><span>حداکثر کل ارسال</span><strong id="estimateMax">--</strong></div>
+                        <div><span>پیام تقریبی روزانه</span><strong id="estimateDaily">--</strong></div>
                         <div><span>میانگین تقریبی کل</span><strong id="estimateAvg">--</strong></div>
+                        <div><span>کاربران هدف</span><strong id="estimateUsers">--</strong></div>
                     </div>
-                    <small class="schedule-field-note">این اعداد تخمینی هستند و بر اساس فاصله تصادفی بین حداقل و حداکثر
-                        محاسبه می‌شوند.</small>
+                    <small class="schedule-field-note">تعداد روزانه و میانگین کل بر اساس زمان ارسال و میانگین فاصله هر
+                        پیام محاسبه می‌شوند.</small>
                 </div>
 
                 <div class="grid-2">
@@ -2107,6 +2107,11 @@
                         <label>انتخاب موضوعات پیام <span class="required-mark">*</span> <span
                                 id="subjectsSelectionCount" class="selection-count">۰ انتخاب</span></label>
                         <div id="subjectsContainer" class="checkbox-group required-group"></div>
+                        <div class="campaign-estimate" style="grid-template-columns: repeat(3, 1fr);">
+                            <div><span>پیام‌های انتخاب‌شده</span><strong id="selectedMessagesCount">--</strong></div>
+                            <div><span>میانگین تقریبی</span><strong id="selectedMessagesAverage">--</strong></div>
+                            <div><span>نرخ</span><strong id="selectedMessagesRate">--</strong></div>
+                        </div>
                         <small id="subjectsValidationHint" class="field-validation-hint">حداقل یک موضوع پیام را انتخاب
                             کنید.</small>
                     </div>
@@ -2114,6 +2119,10 @@
                         <label>مخاطبان هدف (دسته‌بندی‌ها) <span class="required-mark">*</span> <span
                                 id="categoriesSelectionCount" class="selection-count">۰ انتخاب</span></label>
                         <div id="categoriesContainer" class="checkbox-group required-group"></div>
+                        <div class="schedule-delay-note">
+                            <span>👥 تعداد کاربران انتخاب‌شده</span>
+                            <strong id="selectedUsersCount">--</strong>
+                        </div>
                         <small id="categoriesValidationHint" class="field-validation-hint">حداقل یک دسته مخاطب را انتخاب
                             کنید.</small>
                     </div>
@@ -2381,6 +2390,7 @@
 
                 attachCampaignFormListeners();
                 updateCampaignSelectionUI();
+                await refreshCampaignStatisticsData();
             } catch (err) {
                 console.error('خطا در دریافت متادیتا:', err);
             }
@@ -3496,6 +3506,8 @@
         }
 
         function getCampaignScheduleFromForm() {
+            const minDelay = Number(document.getElementById('campMinDelay')?.value);
+            const maxDelay = Number(document.getElementById('campMaxDelay')?.value);
             return {
                 enabled: document.getElementById('campScheduleEnabled').checked,
                 startDate: document.getElementById('campStartDate').value,
@@ -3503,8 +3515,8 @@
                 daysOfWeek: Array.from(document.querySelectorAll('input[name="campDay"]:checked')).map(el => Number(el.value)),
                 startTime: document.getElementById('campStartTime').value,
                 endTime: document.getElementById('campEndTime').value,
-                minDelaySeconds: Number(document.getElementById('campMinDelay').value),
-                maxDelaySeconds: Number(document.getElementById('campMaxDelay').value)
+                minDelaySeconds: minDelay,
+                maxDelaySeconds: maxDelay
             };
         }
 
@@ -3533,6 +3545,7 @@
             const endMinutes = scheduleTimeToMinutes(schedule.endTime);
             const minDelay = Number(schedule.minDelaySeconds);
             const maxDelay = Number(schedule.maxDelaySeconds);
+            const averageDelay = (minDelay + maxDelay) / 2;
             const activeDays = countSelectedDaysInRange(schedule.startDate, schedule.endDate, schedule.daysOfWeek);
 
             if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) return null;
@@ -3540,12 +3553,13 @@
             if (!activeDays) return null;
 
             const durationSeconds = (endMinutes - startMinutes) * 60;
+            const dailyMessages = Math.max(1, Math.round(durationSeconds / averageDelay));
+
             return {
                 durationMinutes: endMinutes - startMinutes,
                 activeDays,
-                minMessages: Math.max(1, Math.ceil(durationSeconds / maxDelay)) * activeDays,
-                maxMessages: Math.max(1, Math.ceil(durationSeconds / minDelay)) * activeDays,
-                averageMessages: Math.max(1, Math.ceil(durationSeconds / ((minDelay + maxDelay) / 2))) * activeDays
+                dailyMessages,
+                averageMessages: dailyMessages * activeDays
             };
         }
 
@@ -3572,33 +3586,143 @@
 
             if (!schedule.daysOfWeek.length || !schedule.startDate || !schedule.endDate) {
                 estimateBox.style.opacity = '0.55';
-                document.getElementById('estimateDays').innerText = '--';
-                document.getElementById('estimateMin').innerText = '--';
-                document.getElementById('estimateMax').innerText = '--';
-                document.getElementById('estimateAvg').innerText = '--';
+                ['estimateDays', 'estimateDaily', 'estimateAvg'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = '--';
+                });
+                updateCampaignStatistics();
                 return;
             }
 
             if (!estimate) {
                 estimateBox.style.opacity = '0.55';
-                document.getElementById('estimateDays').innerText = 'بازه نامعتبر';
-                document.getElementById('estimateMin').innerText = '--';
-                document.getElementById('estimateMax').innerText = '--';
-                document.getElementById('estimateAvg').innerText = '--';
+                const days = document.getElementById('estimateDays');
+                const daily = document.getElementById('estimateDaily');
+                const avg = document.getElementById('estimateAvg');
+                if (days) days.innerText = 'بازه نامعتبر';
+                if (daily) daily.innerText = '--';
+                if (avg) avg.innerText = '--';
+                updateCampaignStatistics();
                 return;
             }
 
             estimateBox.style.opacity = '1';
-            document.getElementById('estimateDays').innerText = `${toPersianDigits(estimate.activeDays)} روز`;
-            document.getElementById('estimateMin').innerText = `${toPersianDigits(estimate.minMessages)} پیام`;
-            document.getElementById('estimateMax').innerText = `${toPersianDigits(estimate.maxMessages)} پیام`;
-            document.getElementById('estimateAvg').innerText = `${toPersianDigits(estimate.averageMessages)} پیام`;
+            const days = document.getElementById('estimateDays');
+            const daily = document.getElementById('estimateDaily');
+            const avg = document.getElementById('estimateAvg');
+            const users = document.getElementById('estimateUsers');
+            if (days) days.innerText = `${toPersianDigits(estimate.activeDays)} روز`;
+            if (daily) daily.innerText = `${toPersianDigits(estimate.dailyMessages)} پیام`;
+            if (avg) avg.innerText = `${toPersianDigits(estimate.averageMessages)} پیام`;
+            if (users) users.innerText = `${toPersianDigits(calculateSelectedUsers().length)} نفر`;
+
+            updateCampaignStatistics();
         }
 
         function getCheckedValues(name) {
             return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
                 .map(el => el.value.trim())
                 .filter(Boolean);
+        }
+
+        let campaignUsersCache = [];
+        let campaignMessagesCache = [];
+
+        async function refreshCampaignStatisticsData() {
+            try {
+                const [usersRes, messagesRes] = await Promise.all([
+                    fetch(`${API_URL}/users`, { cache: 'no-store' }),
+                    fetch(`${API_URL}/messages`, { cache: 'no-store' })
+                ]);
+
+                const usersJson = await usersRes.json();
+                const messagesJson = await messagesRes.json();
+
+                campaignUsersCache = usersJson.success && Array.isArray(usersJson.data)
+                    ? usersJson.data
+                    : [];
+
+                campaignMessagesCache = messagesJson.success && Array.isArray(messagesJson.data)
+                    ? messagesJson.data
+                    : [];
+
+                updateCampaignStatistics();
+            } catch (err) {
+                console.error('خطا در دریافت آمار کمپین:', err);
+                campaignUsersCache = [];
+                campaignMessagesCache = [];
+                updateCampaignStatistics();
+            }
+        }
+
+        function calculateSelectedUsers() {
+            const categories = getCheckedValues('campCategory');
+            const tags = getCheckedValues('campTag');
+
+            if (!categories.length) return [];
+
+            return campaignUsersCache.filter(user => {
+                if (user?.isActive === false || user?.isBlocked === true) return false;
+
+                const category = String(user?.category || '').trim();
+                if (!categories.includes(category)) return false;
+
+                if (tags.length) {
+                    const userTags = Array.isArray(user?.tags)
+                        ? user.tags.map(tag => String(tag).trim())
+                        : [];
+                    if (!tags.some(tag => userTags.includes(tag))) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function getSelectedMessagesCount() {
+            const subjects = getCheckedValues('campSubject');
+            const type = document.getElementById('campType')?.value || 'normal';
+
+            if (!subjects.length) return 0;
+
+            return campaignMessagesCache.filter(message =>
+                subjects.includes(String(message?.subject || '').trim()) &&
+                String(message?.type || 'normal') === type
+            ).length;
+        }
+
+        function updateCampaignStatistics() {
+            const selectedMessages = getSelectedMessagesCount();
+            const selectedUsers = calculateSelectedUsers();
+            const schedule = getCampaignScheduleFromForm();
+            const estimate = calculateCampaignEstimate(schedule);
+            const averageMessages = estimate ? estimate.averageMessages : 0;
+            const rate = selectedMessages > 0 ? (averageMessages / selectedMessages) : 0;
+
+            const messageCountEl = document.getElementById('selectedMessagesCount');
+            const averageEl = document.getElementById('selectedMessagesAverage');
+            const rateEl = document.getElementById('selectedMessagesRate');
+            const usersEl = document.getElementById('selectedUsersCount');
+            const estimateUsersEl = document.getElementById('estimateUsers');
+
+            if (messageCountEl) {
+                messageCountEl.innerText = toPersianDigits(selectedMessages);
+            }
+            if (averageEl) {
+                averageEl.innerText = averageMessages > 0
+                    ? `${toPersianDigits(averageMessages)} پیام`
+                    : '--';
+            }
+            if (rateEl) {
+                rateEl.innerText = selectedMessages > 0
+                    ? toPersianDigits(Number(rate.toFixed(2)))
+                    : '--';
+            }
+            if (usersEl) {
+                usersEl.innerText = toPersianDigits(selectedUsers.length);
+            }
+            if (estimateUsersEl) {
+                estimateUsersEl.innerText = toPersianDigits(selectedUsers.length);
+            }
         }
 
         function updateCampaignSelectionUI() {
@@ -3639,6 +3763,8 @@
                 const delayValid = Number.isFinite(times.minDelaySeconds) && Number.isFinite(times.maxDelaySeconds) && times.minDelaySeconds > 0 && times.maxDelaySeconds >= times.minDelaySeconds;
                 createBtn.disabled = !(titleValid && subjectsValid && categoriesValid && daysValid && timeValid && dateValid && delayValid);
             }
+
+            updateCampaignStatistics();
         }
 
         function initializeCampaignScheduleDefaults() {
@@ -3762,6 +3888,7 @@
                 document.getElementById('campTitle').value = '';
                 document.querySelectorAll('#tab-campaign input[name="campSubject"], #tab-campaign input[name="campCategory"], #tab-campaign input[name="campTag"]').forEach(el => { el.checked = false; });
                 updateCampaignSelectionUI();
+                await refreshCampaignStatisticsData();
                 await fetchDashboardData();
                 appendLog(`[Campaign] کمپین جدید با عنوان "${title}" ساخته شد. موضوعات: ${subjects.length}، دسته‌ها: ${targetCategories.join('، ')}${targetTags.length ? `، تگ‌ها: ${targetTags.join('، ')}` : ''}.`, 'success');
             } catch (err) {
