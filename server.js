@@ -240,21 +240,6 @@ async function syncScheduledCampaigns() {
                 continue;
             }
 
-            // اگر زمان‌بندی کمپین غیرفعال باشد، Scheduler هرگز آن را خودکار شروع نمی‌کند.
-            // چنین کمپینی فقط با دستور دستی کاربر اجرا می‌شود.
-            // اگر قبلاً به‌صورت دستی running شده باشد، Scheduler آن را متوقف نمی‌کند.
-            if (campaign.schedule?.enabled === false) {
-                setCampaignRuntime(id, {
-                    mode: campaign.status === 'running' ? 'manual-running' : 'manual',
-                    message: campaign.status === 'running'
-                        ? 'کمپین بدون زمان‌بندی به‌صورت دستی در حال اجرا است.'
-                        : 'زمان‌بندی کمپین غیرفعال است؛ شروع فقط به‌صورت دستی انجام می‌شود.',
-                    nextStart: null,
-                    nextEnd: null
-                });
-                continue;
-            }
-
             if (state.finished) {
                 if (campaign.status !== 'completed') {
                     campaign.status = 'completed';
@@ -404,10 +389,8 @@ function normalizeCampaignSchedule(schedule = {}) {
         )]
         : [];
 
-    // زمان‌بندی فقط وقتی فعال است که کاربر صراحتاً تیک آن را روشن کرده باشد.
-    // undefined/null/false همگی به معنی غیرفعال بودن زمان‌بندی هستند.
     return {
-        enabled: schedule?.enabled === true,
+        enabled: schedule.enabled !== false,
         daysOfWeek: daysOfWeek.sort((a, b) => a - b),
         startTime: typeof schedule.startTime === 'string' ? schedule.startTime : '10:00',
         endTime: typeof schedule.endTime === 'string' ? schedule.endTime : '12:00'
@@ -1392,11 +1375,8 @@ app.post(
                 maxDelaySeconds:
                     delayCheck.maxDelaySeconds,
 
-                schedule: {
-                    ...scheduleCheck.schedule,
-                    // فقط true صریح از سمت فرم اجازه فعال شدن Scheduler را می‌دهد.
-                    enabled: schedule?.enabled === true
-                }
+                schedule:
+                    scheduleCheck.schedule
 
             });
 
@@ -2096,22 +2076,9 @@ app.get(
             }
 
 
-            // صف واقعی کمپین را دقیقاً مطابق Worker محاسبه می‌کنیم.
-            // کاربر ناموفق با isActive=false از این صف حذف می‌شود و دیگر برنمی‌گردد.
-            // تعداد موفق و ناموفق از شمارنده‌های خود کمپین می‌آید تا با حذف کاربر
-            // ناموفق، مخرج پیشرفت کوچک نشود.
-            const queueQuery = {
+            const userQuery = {
 
-                isActive: true,
-
-                isBlocked: {
-                    $ne: true
-                },
-
-                mobile: {
-                    $exists: true,
-                    $ne: null
-                }
+                isActive: true
 
             };
 
@@ -2121,7 +2088,7 @@ app.get(
                 campaign.targetCategories.length > 0
             ) {
 
-                queueQuery.category = {
+                userQuery.category = {
 
                     $in:
                         campaign.targetCategories
@@ -2136,7 +2103,7 @@ app.get(
                 campaign.targetTags.length > 0
             ) {
 
-                queueQuery.tags = {
+                userQuery.tags = {
 
                     $in:
                         campaign.targetTags
@@ -2146,49 +2113,26 @@ app.get(
             }
 
 
-            if (campaign.type === 'normal') {
-
-                queueQuery.status = 'pending';
-
-                queueQuery[
-                    'receivedMessages.messageType'
-                ] = {
-                    $ne: 'normal'
-                };
-
-            } else {
-
-                queueQuery[
-                    'receivedMessages.messageType'
-                ] = {
-                    $ne: 'festival'
-                };
-
-            }
-
-
-            // این تعداد فقط کسانی هستند که هنوز واقعاً باید پیام بگیرند.
-            const pendingUsers =
+            const totalUsers =
                 await User.countDocuments(
-                    queueQuery
+                    userQuery
                 );
 
 
-            // موفق + ناموفق = تمام تلاش‌های انجام‌شده در همین کمپین.
-            // در نتیجه 95 موفق + 5 ناموفق از 100 نفر => 100% تکمیل.
             const sentUsers =
-                Number(campaign.totalSent || 0);
+                await User.countDocuments({
 
-            const failedUsers =
-                Number(campaign.totalFailed || 0);
+                    ...userQuery,
 
-            const completedUsers =
-                sentUsers +
-                failedUsers;
+                    'receivedMessages.messageType':
+                        campaign.type
 
-            const totalUsers =
-                pendingUsers +
-                completedUsers;
+                });
+
+
+            const pendingUsers =
+                totalUsers -
+                sentUsers;
 
 
             res.json({
@@ -2250,10 +2194,6 @@ app.get(
                     totalFailed:
                         campaign.totalFailed,
 
-                    failedUsers,
-
-                    completedUsers,
-
                     // اگر کمپین در حال اجراست
                     // مقدار زنده را ارسال می‌کنیم.
                     // اگر متوقف است مقدار ذخیره‌شده DB.
@@ -2295,7 +2235,7 @@ app.get(
 
                                     (
 
-                                        completedUsers /
+                                        sentUsers /
                                         totalUsers
 
                                     ) * 100
@@ -2818,7 +2758,7 @@ export const runCampaignWorker = (campaignId) => {
 
                     process.stdout.write(
 
-                        `\r⏱️ زمان باقی‌مانده تا ارسال پیام بعدی: ${mins} دقیقه و ${secs < 10 ? '0' : ''}${secs} ثانیه   `
+                        `\r⏱️ زمان باقی‌مانده تا اجرای بعدی: ${mins} دقیقه و ${secs < 10 ? '0' : ''}${secs} ثانیه   `
 
                     );
 
@@ -3402,11 +3342,20 @@ export const runCampaignWorker = (campaignId) => {
                 new Date();
 
 
-            const isSuccess =
+            const sendResult =
                 await processUserAction(
                     targetUser.mobile,
                     randomMessage.text
                 );
+
+            // processUserAction در نسخه مقاوم، نتیجه را به‌صورت آبجکت برمی‌گرداند.
+            // فقط success=true یعنی ارسال واقعاً تأیید شده است.
+            const isSuccess =
+                sendResult === true ||
+                sendResult?.success === true;
+
+            const isPermanentFailure =
+                sendResult?.permanentFailure === true;
 
 
             if (isSuccess) {
@@ -3452,30 +3401,38 @@ export const runCampaignWorker = (campaignId) => {
 
             } else {
 
-                // اگر processUserAction نتواند چت کاربر را پیدا/باز کند
-                // یا ارسال پیام ناموفق باشد، کاربر برای همیشه از ارسال‌های خودکار حذف می‌شود.
-                // isActive=false باعث می‌شود Query کمپین‌های بعدی دیگر این کاربر را انتخاب نکند.
-                targetUser.isActive = false;
+                // هر ارسال ناموفق فقط ۱۵ ثانیه بعد دوباره تلاش می‌شود
+                // تا تأخیر اصلی کمپین (مثلاً ۲۰ دقیقه) به خاطر یک خطا از دست نرود.
+                // فقط خطایی که processUserAction صراحتاً permanentFailure=true اعلام کند
+                // باعث حذف دائمی کاربر از صف می‌شود؛ خطاهای موقت قابل Retry هستند.
+                if (isPermanentFailure) {
+                    targetUser.isActive = false;
+                    await targetUser.save();
 
-                await targetUser.save();
+                    console.log(
+                        `❌ ارسال ناموفق دائمی | گیرنده: ${userLabel} | کاربر از صف ارسال حذف شد | زمان: ${new Date().toLocaleString('fa-IR')}`
+                    );
+                } else {
+                    console.log(
+                        `⚠️ ارسال ناموفق موقت | گیرنده: ${userLabel} | کاربر حذف نشد و برای تلاش مجدد باقی می‌ماند | زمان: ${new Date().toLocaleString('fa-IR')}`
+                    );
+                }
 
                 campaign.totalFailed += 1;
-
                 await campaign.save();
 
-
                 console.log(
-
-                    `❌ ارسال ناموفق | گیرنده: ${userLabel} | وضعیت: کاربر رد شد و دیگر پیام دریافت نمی‌کند | زمان: ${new Date().toLocaleString('fa-IR')}`
-
+                    `⏱️ تلاش بعدی به دلیل ناموفق بودن ارسال، ۱۵ ثانیه دیگر انجام می‌شود.`
                 );
 
-                console.log(
-
-                    `⏭️ کاربر ${userLabel} به دلیل ناموفق بودن ارسال از لیست ارسال خودکار حذف شد.`
-
+                await scheduleNextRun(
+                    15000,
+                    {
+                        persist: true
+                    }
                 );
 
+                return;
             }
 
 
