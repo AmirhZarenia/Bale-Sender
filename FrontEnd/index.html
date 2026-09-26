@@ -1929,12 +1929,11 @@
                             <tr>
                                 <th>موضوع پیام</th>
                                 <th>تعداد پیام‌ها</th>
-                                <th>انواع پیام</th>
                             </tr>
                         </thead>
                         <tbody id="messageStatsTableBody">
                             <tr>
-                                <td colspan="3" style="text-align: center;">در حال بارگذاری آمار...</td>
+                                <td colspan="2" style="text-align: center;">در حال بارگذاری آمار...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1949,13 +1948,6 @@
                     <textarea id="msgText" placeholder="متن پیام را وارد کنید..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>نوع پیام:</label>
-                    <select id="msgType">
-                        <option value="normal">عادی (Normal)</option>
-                        <option value="festival">جشنواره (Festival)</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label>موضوع پیام (مثلاً: هوش مصنوعی، معماری، تخفیف):</label>
                     <input type="text" id="msgSubject" placeholder="موضوع را بنویسید">
                 </div>
@@ -1963,6 +1955,17 @@
                 <button type="button" class="btn btn-secondary" id="cancelMsgEditBtn" style="display:none;"
                     onclick="resetMessageForm()">لغو ویرایش</button>
                 <div id="msgAlert" class="alert"></div>
+            </div>
+
+            <div class="card" style="max-width: 700px; margin: 20px auto;">
+                <h3>📥 وارد کردن پیام‌ها از اکسل</h3>
+                <p>فایل اکسل باید شامل ستون‌های «موضوع» و «متن پیام» باشد.</p>
+                <div class="form-group">
+                    <label>فایل اکسل:</label>
+                    <input type="file" id="messagesExcelFile" accept=".xlsx,.xls,.csv">
+                </div>
+                <button type="button" class="btn" onclick="uploadMessagesExcel()">وارد کردن پیام‌ها</button>
+                <div id="messagesExcelAlert" class="alert"></div>
             </div>
 
             <div class="card">
@@ -1977,14 +1980,13 @@
                         <thead>
                             <tr>
                                 <th>موضوع</th>
-                                <th>نوع پیام</th>
                                 <th>متن پیام</th>
                                 <th>عملیات</th>
                             </tr>
                         </thead>
                         <tbody id="manageMessagesTableBody">
                             <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted);">لطفاً برای جستجوی
+                                <td colspan="3" style="text-align: center; color: var(--text-muted);">لطفاً برای جستجوی
                                     پیام چیزی تایپ کنید...</td>
                             </tr>
                         </tbody>
@@ -2453,29 +2455,21 @@
                 const stats = Array.isArray(json.data) ? json.data : [];
 
                 if (!stats.length) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">هنوز پیامی در بانک پیام‌ها ثبت نشده است.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">هنوز پیامی در بانک پیام‌ها ثبت نشده است.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = stats.map(item => {
                     const subject = escapeHtml(item?._id || 'بدون موضوع');
                     const count = Number(item?.count || 0);
-                    const types = Array.isArray(item?.types) ? item.types : [];
-                    const badges = types.map(type =>
-                        type === 'festival'
-                            ? '<span class="subject-type-badge festival">جشنواره</span>'
-                            : '<span class="subject-type-badge normal">عادی</span>'
-                    ).join(' ') || '<span class="subject-type-badge unknown">نامشخص</span>';
-
                     return `<tr>
                         <td><strong>${subject}</strong></td>
                         <td><strong>${toPersianDigits(count)}</strong></td>
-                        <td>${badges}</td>
                     </tr>`;
                 }).join('');
             } catch (err) {
                 console.error('Message Stats Error:', err);
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--danger);">خطا در دریافت آمار پیام‌ها: ${escapeHtml(err.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--danger);">خطا در دریافت آمار پیام‌ها: ${escapeHtml(err.message)}</td></tr>`;
             }
         }
 
@@ -2484,7 +2478,7 @@
             const tbody = document.getElementById('manageMessagesTableBody');
 
             if (!query) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">لطفاً برای جستجوی پیام چیزی تایپ کنید...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">لطفاً برای جستجوی پیام چیزی تایپ کنید...</td></tr>';
                 return;
             }
 
@@ -2496,7 +2490,7 @@
                     tbody.innerHTML = '';
                     messagesCache = {};
                     if (json.data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--danger);">پیامی یافت نشد.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--danger);">پیامی یافت نشد.</td></tr>';
                         return;
                     }
                     json.data.forEach(m => {
@@ -2504,7 +2498,6 @@
                         tbody.innerHTML += `
                             <tr>
                                 <td><strong>${m.subject}</strong></td>
-                                <td>${m.type === 'normal' ? 'عادی' : 'جشنواره'}</td>
                                 <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${m.text}">${m.text}</td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-warning" onclick="editMessage('${m._id}')">ویرایش</button>
@@ -2522,7 +2515,6 @@
             if (!m) return;
             document.getElementById('editMsgId').value = m._id;
             document.getElementById('msgSubject').value = m.subject;
-            document.getElementById('msgType').value = m.type;
             document.getElementById('msgText').value = m.text;
             document.getElementById('msgFormTitle').innerText = '✏️ ویرایش پیام';
             document.getElementById('saveMsgBtn').innerText = 'ذخیره تغییرات';
@@ -2534,16 +2526,41 @@
             document.getElementById('editMsgId').value = '';
             document.getElementById('msgSubject').value = '';
             document.getElementById('msgText').value = '';
-            document.getElementById('msgType').value = 'normal';
             document.getElementById('msgFormTitle').innerText = '✍️ ثبت پیام جدید';
             document.getElementById('saveMsgBtn').innerText = 'ثبت پیام در دیتابیس';
             document.getElementById('cancelMsgEditBtn').style.display = 'none';
         }
 
+        async function uploadMessagesExcel() {
+            const fileInput = document.getElementById('messagesExcelFile');
+            const alertBox = document.getElementById('messagesExcelAlert');
+            if (!fileInput.files.length) {
+                showAlert(alertBox, 'لطفاً فایل اکسل را انتخاب کنید.', false);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const res = await fetch(`${API_URL}/messages/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(alertBox, `${data.added} پیام با موفقیت وارد شد.`, true);
+                    fileInput.value = '';
+                    fetchDashboardData();
+                    appendLog(`[Excel] ${data.added} پیام از فایل اکسل وارد شد.`);
+                } else {
+                    showAlert(alertBox, data.error || 'وارد کردن پیام‌ها ناموفق بود.', false);
+                }
+            } catch (err) {
+                showAlert(alertBox, 'خطا در ارتباط با سرور', false);
+            }
+        }
+
         async function createMessage() {
             const id = document.getElementById('editMsgId').value;
             const text = document.getElementById('msgText').value;
-            const type = document.getElementById('msgType').value;
             const subject = document.getElementById('msgSubject').value;
             const alertBox = document.getElementById('msgAlert');
 
@@ -2552,7 +2569,7 @@
                 return;
             }
 
-            const payload = { text, type, subject };
+            const payload = { text, subject };
             const url = id ? `${API_URL}/messages/${id}` : `${API_URL}/messages`;
             const method = id ? 'PUT' : 'POST';
 
@@ -3683,13 +3700,10 @@
 
         function getSelectedMessagesCount() {
             const subjects = getCheckedValues('campSubject');
-            const type = document.getElementById('campType')?.value || 'normal';
-
             if (!subjects.length) return 0;
 
             return campaignMessagesCache.filter(message =>
-                subjects.includes(String(message?.subject || '').trim()) &&
-                String(message?.type || 'normal') === type
+                subjects.includes(String(message?.subject || '').trim())
             ).length;
         }
 

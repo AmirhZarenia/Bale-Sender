@@ -1052,31 +1052,22 @@ app.post(
 
             const {
                 text,
-                type,
                 subject
             } = req.body;
 
-
-            if (
-                !text ||
-                !type ||
-                !subject
-            ) {
-
+            if (!text || !subject) {
                 return res.status(400).json({
-                    error:
-                        'متن پیام، نوع و موضوع الزامی هستند.'
+                    success: false,
+                    error: 'متن پیام و موضوع الزامی هستند.'
                 });
-
             }
 
-
-            const newMessage =
-                await Message.create({
-                    text,
-                    type,
-                    subject
-                });
+            // فیلد type فقط برای سازگاری با مدل قدیمی نگه داشته شده و در انتخاب پیام نقشی ندارد.
+            const newMessage = await Message.create({
+                text,
+                subject,
+                type: 'normal'
+            });
 
 
             res.status(201).json({
@@ -1097,6 +1088,59 @@ app.post(
 
     }
 );
+
+
+// ==========================================
+// وارد کردن پیام‌ها از فایل اکسل
+// ==========================================
+app.post('/api/messages/upload', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'هیچ فایلی ارسال نشده است.' });
+        }
+
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = sheet ? xlsx.utils.sheet_to_json(sheet, { defval: '' }) : [];
+
+        if (!rows.length) {
+            return res.status(400).json({ success: false, error: 'فایل اکسل خالی است یا داده‌ای در آن یافت نشد.' });
+        }
+
+        const firstRow = rows[0];
+        const subjectKey = Object.keys(firstRow).find(key =>
+            ['موضوع', 'موضوع پیام', 'subject'].includes(String(key).trim().toLowerCase())
+        );
+        const textKey = Object.keys(firstRow).find(key =>
+            ['متن پیام', 'متن', 'text', 'message'].includes(String(key).trim().toLowerCase())
+        );
+
+        if (!subjectKey || !textKey) {
+            return res.status(400).json({
+                success: false,
+                error: 'فایل باید دو ستون «موضوع» و «متن پیام» داشته باشد.'
+            });
+        }
+
+        const messages = rows
+            .map(row => ({
+                subject: String(row[subjectKey] ?? '').trim(),
+                text: String(row[textKey] ?? '').trim(),
+                // فیلد type فقط برای سازگاری با مدل قدیمی است.
+                type: 'normal'
+            }))
+            .filter(row => row.subject && row.text);
+
+        if (!messages.length) {
+            return res.status(400).json({ success: false, error: 'هیچ ردیف معتبر دارای موضوع و متن پیام پیدا نشد.' });
+        }
+
+        const inserted = await Message.insertMany(messages);
+        return res.status(201).json({ success: true, added: inserted.length });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message || 'خطا در وارد کردن پیام‌ها از اکسل.' });
+    }
+});
 
 
 // ==========================================
@@ -1540,6 +1584,21 @@ app.post(
     async (req, res) => {
 
         try {
+            const campaignForSchedule = await Campaign.findById(req.params.id);
+            if (!campaignForSchedule) {
+                return res.status(404).json({ success: false, error: 'کمپین یافت نشد.' });
+            }
+
+            const scheduleState = getScheduleState(campaignForSchedule, new Date());
+            if (!scheduleState.valid) {
+                return res.status(400).json({ success: false, error: scheduleState.error });
+            }
+            if (!scheduleState.active) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'توقف یا تغییر وضعیت دستی کمپین فقط در بازه زمانی مجاز امکان‌پذیر است.'
+                });
+            }
 
             const {
                 status
@@ -2478,7 +2537,6 @@ app.put(
 
             const {
                 text,
-                type,
                 subject
             } = resq.body;
 
@@ -2490,7 +2548,6 @@ app.put(
 
                     {
                         text,
-                        type,
                         subject
                     },
 
@@ -2625,12 +2682,6 @@ app.get(
                             count:
                             {
                                 $sum: 1
-                            },
-
-                            types:
-                            {
-                                $addToSet:
-                                    "$type"
                             }
 
                         }
@@ -3269,12 +3320,7 @@ export const runCampaignWorker = (campaignId) => {
 
 
             // انتخاب پیام
-            let messageQuery = {
-
-                type:
-                    campaign.type
-
-            };
+            let messageQuery = {};
 
 
             if (

@@ -1,14 +1,14 @@
-2026/09/24-11:16:29.559 4848 Reusing MANIFEST S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/MANIFEST-000001
-2026/09/24-11:16:29.560 4848 Recovering log #1055
-2026/09/24-11:16:29.571 4848 Reusing old log S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/001055.log 
-2026/09/24-11:16:29.572 4848 Delete type=2 #1053
-2026/09/24-11:16:29.605 4848 Level-0 table #1060: started
-2026/09/24-11:16:29.612 4848 Level-0 table #1060: 141586 bytes OK
-2026/09/24-11:16:29.614 4848 Delete type=0 #1055
-2026/09/24-11:16:29.615 2f4c Manual compaction at level-0 from ' X\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' Y\x01\x00\x00\x00' @ 0 : 0; will stop at ' X\x01\x00\x00\x05' @ 141746 : 1
-2026/09/24-11:16:29.615 2f4c Compacting 1@0 + 1@1 files
-2026/09/24-11:16:29.668 2f4c Generated table #1061@0: 21514 keys, 1371629 bytes
-2026/09/24-11:16:29.668 2f4c Compacted 1@0 + 1@1 files => 1371629 bytes
-2026/09/24-11:16:29.669 2f4c compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/09/24-11:16:29.670 2f4c Delete type=2 #1060
-2026/09/24-11:16:29.670 2f4c Manual compaction at level-0 from ' X\x01\x00\x00\x05' @ 141746 : 1 .. ' Y\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/09/26-09:29:55.090 57e8 Reusing MANIFEST S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/26-09:29:55.091 57e8 Recovering log #1063
+2026/09/26-09:29:55.092 57e8 Reusing old log S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/001063.log 
+2026/09/26-09:29:55.093 57e8 Delete type=2 #1061
+2026/09/26-09:29:55.127 4e98 Level-0 table #1068: started
+2026/09/26-09:29:55.129 4e98 Level-0 table #1068: 19454 bytes OK
+2026/09/26-09:29:55.131 4e98 Delete type=0 #1063
+2026/09/26-09:29:55.131 5038 Manual compaction at level-0 from ' Z\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' [\x01\x00\x00\x00' @ 0 : 0; will stop at ' Z\x01\x00\x00\x05' @ 143566 : 1
+2026/09/26-09:29:55.132 5038 Compacting 1@0 + 1@1 files
+2026/09/26-09:29:55.185 5038 Generated table #1069@0: 21559 keys, 1375307 bytes
+2026/09/26-09:29:55.185 5038 Compacted 1@0 + 1@1 files => 1375307 bytes
+2026/09/26-09:29:55.186 5038 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/09/26-09:29:55.186 5038 Delete type=2 #1068
+2026/09/26-09:29:55.187 57e8 Manual compaction at level-0 from ' Z\x01\x00\x00\x05' @ 143566 : 1 .. ' [\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
