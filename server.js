@@ -1109,7 +1109,7 @@ app.post('/api/messages/upload', upload.single('file'), async (req, res) => {
 
         const firstRow = rows[0];
         const subjectKey = Object.keys(firstRow).find(key =>
-            ['موضوع', 'موضوع پیام', 'subject'].includes(String(key).trim().toLowerCase())
+            ['نوع', 'موضوع پیام', 'subject'].includes(String(key).trim().toLowerCase())
         );
         const textKey = Object.keys(firstRow).find(key =>
             ['متن پیام', 'متن', 'text', 'message'].includes(String(key).trim().toLowerCase())
