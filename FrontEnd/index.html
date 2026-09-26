@@ -3426,7 +3426,9 @@
 
             box.appendChild(row);
 
-            while (box.children.length > 500) {
+            // تمام لاگ‌هایی که سرور در حافظه نگه می‌دارد در فرانت نیز نگه داشته می‌شوند.
+            // محدودیت ۵۰۰تایی قبلی باعث می‌شد بخشی از تاریخچه حذف شود.
+            while (box.children.length > 5000) {
                 box.removeChild(box.firstChild);
             }
 
@@ -3487,7 +3489,8 @@
             const label = type === 'error' ? 'ERR' : type === 'success' ? 'OK' : type === 'warn' ? 'WARN' : 'SYS';
             row.innerHTML = `<span>${label}</span> [${time}] ${escapeHtml(message)}`;
             box.appendChild(row);
-            while (box.children.length > 250) box.removeChild(box.firstChild);
+            // لاگ‌های دریافتی از سرور نباید بعد از چند دقیقه از نمایش حذف شوند.
+            while (box.children.length > 5000) box.removeChild(box.firstChild);
             box.scrollTop = box.scrollHeight;
         }
 

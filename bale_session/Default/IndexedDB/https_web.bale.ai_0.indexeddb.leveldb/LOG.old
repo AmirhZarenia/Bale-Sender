@@ -1,36 +1,14 @@
-2026/09/21-12:03:48.325 560c Reusing MANIFEST S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/MANIFEST-000001
-2026/09/21-12:03:48.326 560c Recovering log #803
-2026/09/21-12:03:48.328 560c Reusing old log S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/000803.log 
-2026/09/21-12:03:48.328 560c Delete type=2 #802
-2026/09/21-12:03:48.372 1e3c Level-0 table #808: started
-2026/09/21-12:03:48.382 1e3c Level-0 table #808: 14045 bytes OK
-2026/09/21-12:03:48.386 1e3c Delete type=0 #803
-2026/09/21-12:03:48.387 1e3c Manual compaction at level-0 from ' \x05\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' \x06\x01\x00\x00\x00' @ 0 : 0; will stop at ' \x05\x01\x00\x00\x05' @ 111485 : 1
-2026/09/21-12:03:48.388 1e3c Compacting 1@0 + 1@1 files
-2026/09/21-12:03:48.479 1e3c Generated table #809@0: 18982 keys, 1915238 bytes
-2026/09/21-12:03:48.479 1e3c Compacted 1@0 + 1@1 files => 1915238 bytes
-2026/09/21-12:03:48.480 1e3c compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/09/21-12:03:48.480 1e3c Delete type=2 #808
-2026/09/21-12:03:48.481 560c Manual compaction at level-0 from ' \x05\x01\x00\x00\x05' @ 111485 : 1 .. ' \x06\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/09/21-12:04:31.860 ba8 Level-0 table #811: started
-2026/09/21-12:04:31.863 ba8 Level-0 table #811: 5562 bytes OK
-2026/09/21-12:04:31.865 ba8 Delete type=2 #805
-2026/09/21-12:04:31.865 ba8 Delete type=0 #807
-2026/09/21-12:04:31.867 ba8 Manual compaction at level-0 from ' \x06\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' \x07\x01\x00\x00\x00' @ 0 : 0; will stop at ' \x06\x01\x00\x00\x05' @ 111648 : 1
-2026/09/21-12:04:31.867 ba8 Compacting 1@0 + 1@1 files
-2026/09/21-12:04:31.941 ba8 Generated table #812@0: 18982 keys, 1915219 bytes
-2026/09/21-12:04:31.941 ba8 Compacted 1@0 + 1@1 files => 1915219 bytes
-2026/09/21-12:04:31.942 ba8 compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/09/21-12:04:31.942 ba8 Delete type=2 #811
-2026/09/21-12:04:31.943 1e3c Manual compaction at level-0 from ' \x06\x01\x00\x00\x05' @ 111648 : 1 .. ' \x07\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/09/21-12:09:01.375 ba8 Level-0 table #814: started
-2026/09/21-12:09:01.380 ba8 Level-0 table #814: 16432 bytes OK
-2026/09/21-12:09:01.382 ba8 Delete type=2 #809
-2026/09/21-12:09:01.382 ba8 Delete type=0 #810
-2026/09/21-12:09:01.384 560c Manual compaction at level-0 from ' \x07\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' \x08\x01\x00\x00\x00' @ 0 : 0; will stop at ' \x07\x01\x00\x00\x05' @ 112045 : 1
-2026/09/21-12:09:01.384 560c Compacting 1@0 + 1@1 files
-2026/09/21-12:09:01.463 560c Generated table #815@0: 18988 keys, 1914655 bytes
-2026/09/21-12:09:01.463 560c Compacted 1@0 + 1@1 files => 1914655 bytes
-2026/09/21-12:09:01.464 560c compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/09/21-12:09:01.465 560c Delete type=2 #814
-2026/09/21-12:09:01.466 560c Manual compaction at level-0 from ' \x07\x01\x00\x00\x05' @ 112045 : 1 .. ' \x08\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/09/24-11:13:06.494 4830 Reusing MANIFEST S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/24-11:13:06.495 4830 Recovering log #1051
+2026/09/24-11:13:06.497 4830 Reusing old log S:\برنامه نویسی\برنامه نویسی\NodeJS\Bale Sender\bale_session\Default\IndexedDB\https_web.bale.ai_0.indexeddb.leveldb/001051.log 
+2026/09/24-11:13:06.498 4830 Delete type=2 #1050
+2026/09/24-11:13:06.525 4c38 Level-0 table #1056: started
+2026/09/24-11:13:06.528 4c38 Level-0 table #1056: 32498 bytes OK
+2026/09/24-11:13:06.529 4c38 Delete type=0 #1051
+2026/09/24-11:13:06.530 4830 Manual compaction at level-0 from ' W\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' X\x01\x00\x00\x00' @ 0 : 0; will stop at ' W\x01\x00\x00\x05' @ 137377 : 1
+2026/09/24-11:13:06.530 4830 Compacting 1@0 + 1@1 files
+2026/09/24-11:13:06.577 4830 Generated table #1057@0: 20309 keys, 1319821 bytes
+2026/09/24-11:13:06.577 4830 Compacted 1@0 + 1@1 files => 1319821 bytes
+2026/09/24-11:13:06.578 4830 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/09/24-11:13:06.579 4830 Delete type=2 #1056
+2026/09/24-11:13:06.579 4c38 Manual compaction at level-0 from ' W\x01\x00\x00\x05' @ 137377 : 1 .. ' X\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
