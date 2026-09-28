@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import cors from 'cors';
 import multer from 'multer';
 import xlsx from 'xlsx';
@@ -11,8 +11,6 @@ import User from './models/User.js';
 import Message from './models/Message.js';
 import Campaign from './models/Campaign.js';
 import { initBaleBrowser, processUserAction } from './baleService.js';
-
-dotenv.config();
 
 const app = express();
 
@@ -3640,7 +3638,6 @@ export const runCampaignWorker = (campaignId) => {
 const PORT =
     process.env.PORT ||
     5000;
-
 
 app.listen(
 
