@@ -2753,7 +2753,10 @@
                 }
 
                 const schedulePayload = scheduleData.data || scheduleData;
-                const scheduleState = getClientScheduleState(schedulePayload.schedule, new Date());
+                const scheduleState = getClientScheduleState(
+                    getMonitorSchedule(schedulePayload),
+                    new Date()
+                );
                 renderMonitorSchedule(schedulePayload);
 
                 if (!scheduleState.valid) {
