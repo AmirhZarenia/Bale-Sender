@@ -2011,6 +2011,34 @@
                     </select>
                 </div>
 
+                <div class="form-group" style="margin-top:14px;">
+                    <label for="campContentMode">نوع محتوای کمپین:</label>
+                    <select id="campContentMode" onchange="onCampaignContentModeChange()">
+                        <option value="text">فقط متن</option>
+                        <option value="image">فقط تصویر</option>
+                        <option value="text-image">متن + تصویر</option>
+                    </select>
+                    <small class="schedule-field-note">در حالت ترکیبی، برای هر مخاطب یک متن و یک تصویر به‌صورت تصادفی
+                        انتخاب می‌شود.</small>
+                </div>
+                <div id="campaignImageLibraryBox" class="form-group"
+                    style="display:none; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:18px;">
+                    <label>کتابخانه تصاویر کمپین</label>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0;">
+                        <input type="file" id="campaignImageUpload" accept="image/png,image/jpeg,image/webp" multiple>
+                        <button type="button" class="btn" onclick="uploadCampaignImages()">بارگذاری تصاویر</button>
+                        <button type="button" class="btn btn-secondary" onclick="loadCampaignImageLibrary()">به‌روزرسانی
+                            گالری</button>
+                    </div>
+                    <small id="campaignImagesHint" class="schedule-field-note">تصاویر موردنظر را انتخاب کنید؛ برای هر
+                        مخاطب یکی از تصاویر انتخاب‌شده به‌صورت تصادفی استفاده می‌شود.</small>
+                    <div id="campaignImageGallery"
+                        style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px;margin-top:12px;">
+                    </div>
+                    <div style="margin-top:10px;font-weight:700;">تصاویر انتخاب‌شده: <span
+                            id="campaignSelectedImagesCount">۰</span></div>
+                </div>
+
                 <div class="campaign-schedule-box">
                     <div class="campaign-schedule-title">
                         <div>
@@ -2757,6 +2785,7 @@
                     getMonitorSchedule(schedulePayload),
                     new Date()
                 );
+
                 renderMonitorSchedule(schedulePayload);
 
                 if (!scheduleState.valid) {
@@ -3745,6 +3774,77 @@
             }
         }
 
+        const selectedCampaignImages = new Set();
+
+        function onCampaignContentModeChange() {
+            const mode = document.getElementById('campContentMode')?.value || 'text';
+            const box = document.getElementById('campaignImageLibraryBox');
+            if (box) box.style.display = mode === 'text' ? 'none' : 'block';
+            const subjectLabel = document.querySelector('#subjectsContainer')?.closest('.form-group');
+            const subjectHint = document.getElementById('subjectsValidationHint');
+            if (subjectLabel) subjectLabel.style.opacity = mode === 'image' ? '.55' : '1';
+            if (subjectHint && mode === 'image') subjectHint.style.display = 'none';
+            loadCampaignImageLibrary();
+            updateCampaignSelectionUI();
+        }
+
+        async function loadCampaignImageLibrary() {
+            const gallery = document.getElementById('campaignImageGallery');
+            if (!gallery) return;
+            try {
+                const res = await fetch(`${API_URL}/images`);
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.error || 'گالری تصاویر دریافت نشد.');
+                gallery.innerHTML = '';
+                (data.images || []).forEach(img => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'border:1px solid var(--border);border-radius:10px;padding:8px;overflow:hidden;';
+                    const checked = selectedCampaignImages.has(img.id) ? 'checked' : '';
+                    card.innerHTML = `<label style="display:block;cursor:pointer;"><img src="${img.url}" alt="تصویر کمپین" style="width:100%;height:105px;object-fit:cover;border-radius:7px;"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;"><input type="checkbox" value="${img.id}" ${checked} class="campaign-image-choice"><span>انتخاب تصویر</span></div></label><button type="button" class="btn btn-secondary" style="width:100%;margin-top:6px;padding:5px;font-size:12px;" data-delete-image="${img.id}">حذف</button>`;
+                    const cb = card.querySelector('.campaign-image-choice');
+                    cb.addEventListener('change', () => {
+                        if (cb.checked) selectedCampaignImages.add(img.id); else selectedCampaignImages.delete(img.id);
+                        updateCampaignImageCount(); updateCampaignSelectionUI();
+                    });
+                    card.querySelector('[data-delete-image]').addEventListener('click', async () => {
+                        if (!confirm('این تصویر از کتابخانه حذف شود؟')) return;
+                        const del = await fetch(`${API_URL}/images/${encodeURIComponent(img.id)}`, { method: 'DELETE' });
+                        const result = await del.json();
+                        if (!del.ok || !result.success) return showAlert(document.getElementById('campAlert'), result.error || 'حذف تصویر انجام نشد.', false);
+                        selectedCampaignImages.delete(img.id); await loadCampaignImageLibrary(); updateCampaignImageCount(); updateCampaignSelectionUI();
+                    });
+                    gallery.appendChild(card);
+                });
+                if (!(data.images || []).length) gallery.innerHTML = '<div style="color:var(--text-muted);">هنوز تصویری بارگذاری نشده است.</div>';
+                updateCampaignImageCount();
+            } catch (error) {
+                gallery.innerHTML = `<div style="color:var(--danger);">${error.message}</div>`;
+            }
+        }
+
+        function updateCampaignImageCount() {
+            const el = document.getElementById('campaignSelectedImagesCount');
+            if (el) el.innerText = toPersianDigits(selectedCampaignImages.size);
+        }
+
+        async function uploadCampaignImages() {
+            const input = document.getElementById('campaignImageUpload');
+            const files = Array.from(input?.files || []);
+            const alertBox = document.getElementById('campAlert');
+            if (!files.length) return showAlert(alertBox, 'ابتدا یک یا چند تصویر انتخاب کنید.', false);
+            try {
+                for (const file of files) {
+                    const form = new FormData(); form.append('image', file);
+                    const res = await fetch(`${API_URL}/images/upload`, { method: 'POST', body: form });
+                    const data = await res.json();
+                    if (!res.ok || !data.success) throw new Error(data.error || `بارگذاری ${file.name} ناموفق بود.`);
+                }
+                input.value = '';
+                showAlert(alertBox, `${toPersianDigits(files.length)} تصویر به کتابخانه اضافه شد.`, true);
+                await loadCampaignImageLibrary();
+            } catch (error) { showAlert(alertBox, error.message || 'بارگذاری تصویر ناموفق بود.', false); }
+        }
+
         function updateCampaignSelectionUI() {
             const subjects = getCheckedValues('campSubject');
             const categories = getCheckedValues('campCategory');
@@ -3763,7 +3863,9 @@
             if (categoryCount) categoryCount.innerText = `${toPersianDigits(categories.length)} انتخاب`;
             if (tagCount) tagCount.innerText = `${toPersianDigits(tags.length)} انتخاب`;
 
-            const subjectsValid = subjects.length > 0;
+            const contentMode = document.getElementById('campContentMode')?.value || 'text';
+            const subjectsValid = contentMode === 'image' || subjects.length > 0;
+            const imagesValid = contentMode === 'text' || selectedCampaignImages.size > 0;
             const categoriesValid = categories.length > 0;
 
             subjectGroup?.classList.toggle('validation-error', !subjectsValid);
@@ -3781,7 +3883,7 @@
                 const timeValid = !!times.startTime && !!times.endTime && times.startTime < times.endTime;
                 const dateValid = !!times.startDate && !!times.endDate && times.startDate <= times.endDate;
                 const delayValid = Number.isFinite(times.minDelaySeconds) && Number.isFinite(times.maxDelaySeconds) && times.minDelaySeconds > 0 && times.maxDelaySeconds >= times.minDelaySeconds;
-                createBtn.disabled = !(titleValid && subjectsValid && categoriesValid && daysValid && timeValid && dateValid && delayValid);
+                createBtn.disabled = !(titleValid && subjectsValid && imagesValid && categoriesValid && daysValid && timeValid && dateValid && delayValid);
             }
 
             updateCampaignStatistics();
@@ -3826,6 +3928,8 @@
             const type = document.getElementById('campType').value;
             const alertBox = document.getElementById('campAlert');
             const subjects = getCheckedValues('campSubject');
+            const contentMode = document.getElementById('campContentMode')?.value || 'text';
+            const images = Array.from(selectedCampaignImages);
             const targetCategories = getCheckedValues('campCategory');
             const targetTags = getCheckedValues('campTag');
             const schedule = getCampaignScheduleFromForm();
@@ -3837,10 +3941,16 @@
                 return;
             }
 
-            if (!subjects.length) {
+            if (contentMode !== 'image' && !subjects.length) {
                 showAlert(alertBox, 'حداقل یک موضوع پیام را انتخاب کنید.', false);
                 document.getElementById('subjectsContainer')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 updateCampaignSelectionUI();
+                return;
+            }
+
+            if (contentMode !== 'text' && !images.length) {
+                showAlert(alertBox, 'برای حالت تصویری حداقل یک تصویر از کتابخانه انتخاب کنید.', false);
+                document.getElementById('campaignImageLibraryBox')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
@@ -3883,6 +3993,8 @@
                         title,
                         type,
                         subjects,
+                        contentMode,
+                        images,
                         targetCategories,
                         targetTags,
                         // server.js جدید تاریخ و فاصله ارسال را در سطح اصلی payload می‌گیرد.
@@ -3907,6 +4019,8 @@
                 showAlert(alertBox, 'کمپین با موفقیت ساخته شد.', true);
                 document.getElementById('campTitle').value = '';
                 document.querySelectorAll('#tab-campaign input[name="campSubject"], #tab-campaign input[name="campCategory"], #tab-campaign input[name="campTag"]').forEach(el => { el.checked = false; });
+                selectedCampaignImages.clear();
+                await loadCampaignImageLibrary();
                 updateCampaignSelectionUI();
                 await refreshCampaignStatisticsData();
                 await fetchDashboardData();
@@ -3919,6 +4033,7 @@
         }
 
         initializeCampaignScheduleDefaults();
+        loadCampaignImageLibrary();
         updateCampaignEstimate();
         updateCampaignSelectionUI();
 
