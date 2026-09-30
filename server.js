@@ -5,12 +5,14 @@ import cors from 'cors';
 import multer from 'multer';
 import xlsx from 'xlsx';
 import path from 'path';
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'url';
 
 import User from './models/User.js';
 import Message from './models/Message.js';
 import Campaign from './models/Campaign.js';
-import { initBaleBrowser, processUserAction } from './baleService.js';
+import { initBaleBrowser, processUserAction, processUserImageAction } from './baleService.js';
 
 const app = express();
 
@@ -87,6 +89,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, 'FrontEnd')));
+
+const IMAGE_DIR = path.join(__dirname, 'uploads', 'campaign-images');
+await fs.mkdir(IMAGE_DIR, { recursive: true });
+app.use('/campaign-images', express.static(IMAGE_DIR));
 
 // تنظیمات Multer برای دریافت فایل به صورت مستقیم در رم
 const upload = multer({
@@ -1293,6 +1299,47 @@ app.delete('/api/logs', (req, res) => {
     });
 });
 
+// کتابخانه تصاویر کمپین (مخصوص همین پوشه/نمونه برنامه)
+const imageUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 12 * 1024 * 1024, files: 1 },
+    fileFilter: (_req, file, cb) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        cb(allowed.includes(file.mimetype) ? null : new Error('فقط تصویرهای JPG، PNG یا WEBP مجاز هستند.'), allowed.includes(file.mimetype));
+    }
+});
+
+app.get('/api/images', async (_req, res) => {
+    try {
+        const files = await fs.readdir(IMAGE_DIR, { withFileTypes: true });
+        const images = await Promise.all(files.filter(f => f.isFile()).map(async f => {
+            const stat = await fs.stat(path.join(IMAGE_DIR, f.name));
+            return { id: f.name, name: f.name, url: `/campaign-images/${encodeURIComponent(f.name)}`, size: stat.size, uploadedAt: stat.mtime.toISOString() };
+        }));
+        images.sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+        res.json({ success: true, images });
+    } catch (error) { res.status(500).json({ success: false, error: error.message }); }
+});
+
+app.post('/api/images/upload', imageUpload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ success: false, error: 'یک تصویر انتخاب کنید.' });
+        const ext = ({ 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' })[req.file.mimetype];
+        const filename = `${crypto.randomUUID()}${ext}`;
+        await fs.writeFile(path.join(IMAGE_DIR, filename), req.file.buffer, { flag: 'wx' });
+        res.status(201).json({ success: true, image: { id: filename, name: filename, url: `/campaign-images/${encodeURIComponent(filename)}` } });
+    } catch (error) { res.status(500).json({ success: false, error: error.message }); }
+});
+
+app.delete('/api/images/:filename', async (req, res) => {
+    try {
+        const filename = path.basename(String(req.params.filename || ''));
+        if (filename !== req.params.filename || !/^[\w-]+\.(jpg|png|webp)$/i.test(filename)) return res.status(400).json({ success: false, error: 'نام فایل نامعتبر است.' });
+        await fs.unlink(path.join(IMAGE_DIR, filename));
+        res.json({ success: true });
+    } catch (error) { res.status(404).json({ success: false, error: 'تصویر پیدا نشد.' }); }
+});
+
 // ==========================================
 // ۵. ساخت کمپین
 // ==========================================
@@ -1307,6 +1354,8 @@ app.post(
                 title,
                 type,
                 subjects,
+                contentMode = 'text',
+                images = [],
                 targetCategories,
                 targetTags,
                 schedule,
@@ -1352,7 +1401,10 @@ app.post(
             }
 
 
-            if (!cleanSubjects.length) {
+            const cleanContentMode = ['text', 'image', 'text-image'].includes(contentMode) ? contentMode : 'text';
+            const cleanImages = Array.isArray(images) ? [...new Set(images.map(v => path.basename(String(v))).filter(v => /^[\w-]+\.(jpg|png|webp)$/i.test(v)))] : [];
+
+            if (cleanContentMode !== 'image' && !cleanSubjects.length) {
 
                 return res.status(400).json({
                     success: false,
@@ -1361,6 +1413,16 @@ app.post(
 
             }
 
+
+            if (cleanContentMode !== 'text' && !cleanImages.length) {
+                return res.status(400).json({ success: false, error: 'برای حالت تصویری حداقل یک تصویر انتخاب کنید.' });
+            }
+            if (cleanContentMode !== 'text') {
+                for (const imageName of cleanImages) {
+                    try { await fs.access(path.join(IMAGE_DIR, imageName)); }
+                    catch { return res.status(400).json({ success: false, error: `تصویر ${imageName} در کتابخانه پیدا نشد.` }); }
+                }
+            }
 
             if (!cleanCategories.length) {
 
@@ -1404,6 +1466,8 @@ app.post(
                 type,
 
                 subjects: cleanSubjects,
+                contentMode: cleanContentMode,
+                images: cleanImages,
 
                 targetCategories: cleanCategories,
 
@@ -3340,7 +3404,7 @@ export const runCampaignWorker = (campaignId) => {
                 );
 
 
-            if (messagesPool.length === 0) {
+            if (messagesPool.length === 0 && campaign.contentMode !== 'image') {
 
                 console.log(
 
@@ -3362,13 +3426,15 @@ export const runCampaignWorker = (campaignId) => {
             }
 
 
-            const randomMessage =
-                messagesPool[
-                Math.floor(
-                    Math.random() *
-                    messagesPool.length
-                )
-                ];
+            const randomMessage = messagesPool.length ? messagesPool[Math.floor(Math.random() * messagesPool.length)] : null;
+            const imagePool = Array.isArray(campaign.images) ? campaign.images : [];
+            const randomImage = campaign.contentMode !== 'text' && imagePool.length
+                ? imagePool[Math.floor(Math.random() * imagePool.length)] : null;
+            if (campaign.contentMode !== 'text' && !randomImage) {
+                console.error(`❌ کمپین ${campaign.title} تصویر انتخاب‌شده ندارد.`);
+                await scheduleNextRun(10000, { persist: true });
+                return;
+            }
 
 
             const userLabel =
@@ -3379,7 +3445,7 @@ export const runCampaignWorker = (campaignId) => {
 
             console.log(
 
-                `📤 ارسال پیام | گیرنده: ${userLabel} | کمپین: ${campaign.title} | نوع: ${campaign.type} | موضوع: ${randomMessage.subject}`
+                `📤 ارسال کمپین | گیرنده: ${userLabel} | کمپین: ${campaign.title} | حالت: ${campaign.contentMode || 'text'} | موضوع: ${randomMessage?.subject || '—'} | تصویر: ${randomImage || '—'}`
 
             );
 
@@ -3388,11 +3454,11 @@ export const runCampaignWorker = (campaignId) => {
                 new Date();
 
 
-            const sendResult =
-                await processUserAction(
-                    targetUser.mobile,
-                    randomMessage.text
-                );
+            const sendResult = campaign.contentMode === 'image'
+                ? await processUserImageAction(targetUser.mobile, path.join(IMAGE_DIR, randomImage), '')
+                : campaign.contentMode === 'text-image'
+                    ? await processUserImageAction(targetUser.mobile, path.join(IMAGE_DIR, randomImage), randomMessage?.text || '')
+                    : await processUserAction(targetUser.mobile, randomMessage.text);
 
             // processUserAction در نسخه مقاوم، نتیجه را به‌صورت آبجکت برمی‌گرداند.
             // فقط success=true یعنی ارسال واقعاً تأیید شده است.
@@ -3412,7 +3478,7 @@ export const runCampaignWorker = (campaignId) => {
                         campaign.type,
 
                     subject:
-                        randomMessage.subject,
+                        randomMessage?.subject || (randomImage ? `تصویر: ${randomImage}` : '—'),
 
                     sentAt:
                         new Date()
