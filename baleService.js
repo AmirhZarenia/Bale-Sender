@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import puppeteer from 'puppeteer';
 
 let browser;
@@ -29,6 +30,7 @@ export const initBaleBrowser = async () => {
     });
 
     page = await browser.newPage();
+    try { await page.context().overridePermissions(BALE_HOME_URL, ['clipboard-read', 'clipboard-write']); } catch (error) { console.warn(`⚠️ اجازه Clipboard فعال نشد: ${error.message}`); }
     await page.setViewport({ width: 1280, height: 800 });
 
     console.log('🔄 Loading Bale Web...');
@@ -226,7 +228,7 @@ function isVisibleMessageInput() {
     })()`;
 }
 
-async function focusMessageInput(mobile, timeout = INPUT_WAIT_MS) {
+async function focusMessageInput(mobile, timeout = INPUT_WAIT_MS, purpose = 'MESSAGE') {
     if (!page) return false;
 
     if (!(await isPageUsable())) {
@@ -270,7 +272,7 @@ async function focusMessageInput(mobile, timeout = INPUT_WAIT_MS) {
                 });
 
                 if (focused) {
-                    logStep(mobile, 'MESSAGE_INPUT_FOUND', 'کادر واقعی و قابل‌استفاده پیام پیدا و Focus شد.');
+                    logStep(mobile, purpose === 'IMAGE' ? 'IMAGE_INPUT_READY' : 'MESSAGE_INPUT_FOUND', purpose === 'IMAGE' ? 'کادر چت برای Paste عکس آماده شد.' : 'کادر واقعی و قابل‌استفاده پیام پیدا و Focus شد.');
                     return true;
                 }
             }
@@ -558,7 +560,207 @@ async function sendCurrentMessage(mobile, text) {
     return false;
 }
 
-async function processUserActionInternal(mobile, text) {
+async function sendCurrentImage(mobile, imagePath, caption = '') {
+    try {
+        // اگر کپشن وجود داشته باشد، در کادر توضیحاتِ پیش‌نمایش عکس قرار می‌گیرد تا عکس و متن یک پیام باشند.
+        const imageBuffer = await fs.readFile(imagePath);
+        const base64 = imageBuffer.toString('base64');
+        const ext = String(imagePath).toLowerCase().split('.').pop();
+        const sourceMime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : ext === 'webp' ? 'image/webp' : 'image/png';
+
+        const clipboardReady = await page.evaluate(async ({ base64, sourceMime }) => {
+            try {
+                const img = new Image();
+                img.src = `data:${sourceMime};base64,${base64}`;
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => reject(new Error('مرورگر نتوانست فایل تصویر را باز کند.'));
+                });
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                if (!canvas.width || !canvas.height) throw new Error('ابعاد تصویر معتبر نیست.');
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                const pngBlob = await new Promise((resolve, reject) => {
+                    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('تبدیل تصویر به PNG ناموفق بود.')), 'image/png');
+                });
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+                return { ok: true, width: canvas.width, height: canvas.height };
+            } catch (error) {
+                return { ok: false, error: String(error?.message || error) };
+            }
+        }, { base64, sourceMime });
+
+        if (!clipboardReady?.ok) throw new Error(`کپی تصویر در Clipboard ممکن نشد: ${clipboardReady?.error || 'خطای نامشخص'}`);
+        logStep(mobile, 'IMAGE_CLIPBOARD_READY', `تصویر در Clipboard قرار گرفت (${clipboardReady.width}×${clipboardReady.height}).`);
+
+        if (!(await focusMessageInput(mobile, 8000, 'IMAGE'))) throw new Error('کادر چت برای Paste تصویر پیدا نشد.');
+
+        const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+        await page.keyboard.down(modifier);
+        try {
+            await page.keyboard.press('V');
+        } finally {
+            await page.keyboard.up(modifier);
+        }
+        await sleep(1600);
+
+        // متن توضیحات را داخل کادر کپشنِ پنجره پیش‌نمایش عکس وارد می‌کنیم؛
+        // نباید آن را در کادر پیام چت یا به‌صورت پیام جداگانه ارسال کنیم.
+        const captionText = String(caption ?? '').trim();
+        if (captionText) {
+            const captionField = await page.evaluate(() => {
+                const visible = el => {
+                    if (!el) return false;
+                    const r = el.getBoundingClientRect(), st = getComputedStyle(el);
+                    return r.width > 5 && r.height > 5 && st.display !== 'none' &&
+                        st.visibility !== 'hidden' && Number(st.opacity || 1) > 0 &&
+                        el.getAttribute('aria-hidden') !== 'true';
+                };
+                const dialogs = [...document.querySelectorAll(
+                    '[role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="Modal" i]'
+                )].filter(visible);
+                const root = dialogs.find(el => {
+                    const t = String(el.innerText || '').toLowerCase();
+                    return /عکس|تصویر|photo|image/.test(t) || el.querySelector('img, [data-testid*="media" i]');
+                }) || dialogs[dialogs.length - 1];
+                if (!root) return { ok: false, reason: 'PREVIEW_DIALOG_NOT_FOUND' };
+                const fields = [...root.querySelectorAll('textarea,input,[contenteditable="true"],[role="textbox"]')]
+                    .filter(visible);
+                const field = fields.find(el => {
+                    const hint = [el.getAttribute('placeholder'), el.getAttribute('aria-label'),
+                    el.getAttribute('data-placeholder'), el.getAttribute('title'),
+                    el.getAttribute('name')].filter(Boolean).join(' ').toLowerCase();
+                    return /توضیحات|توضیح|شرح|caption|description|اضافه کردن متن|add a caption/.test(hint);
+                });
+                if (!field) return { ok: false, reason: 'CAPTION_FIELD_NOT_FOUND', candidates: fields.length };
+                field.scrollIntoView({ block: 'center', inline: 'center' });
+                field.focus();
+                field.click();
+                return { ok: true, tag: field.tagName, editable: field.getAttribute('contenteditable') === 'true' };
+            });
+
+            if (!captionField?.ok) {
+                throw new Error(`کادر توضیحات عکس پیدا نشد؛ ارسال متوقف شد تا متن جداگانه ارسال نشود. علت: ${captionField?.reason || 'UNKNOWN'}، کادرهای بررسی‌شده: ${captionField?.candidates ?? 0}`);
+            }
+
+            // فقط روش ورود کپشن تغییر کرده: متن در Clipboard کپی و داخل همان کادر Paste می‌شود.
+            await page.evaluate(async text => {
+                await navigator.clipboard.writeText(text);
+            }, captionText);
+
+            const captionModifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+            await page.keyboard.down(captionModifier);
+            try {
+                await page.keyboard.press('V');
+            } finally {
+                await page.keyboard.up(captionModifier);
+            }
+            await sleep(350);
+
+            const captionVerified = await page.evaluate(expected => {
+                const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
+                const wanted = normalize(expected);
+                const visible = el => {
+                    if (!el) return false;
+                    const r = el.getBoundingClientRect(), st = getComputedStyle(el);
+                    return r.width > 5 && r.height > 5 && st.display !== 'none' &&
+                        st.visibility !== 'hidden' && Number(st.opacity || 1) > 0 &&
+                        el.getAttribute('aria-hidden') !== 'true';
+                };
+                const readValue = el => {
+                    if (!el) return '';
+                    if ('value' in el && el.value != null) return String(el.value);
+                    return String(el.innerText || el.textContent || '');
+                };
+                const matches = el => normalize(readValue(el)).includes(wanted);
+
+                // ابتدا خود کادری را بررسی می‌کنیم که Paste در آن انجام شده است؛
+                // بعضی نسخه‌های رابط بله کپشن را بیرون از role=dialog یا بدون placeholder مشخص می‌سازند.
+                const active = document.activeElement;
+                if (visible(active) && matches(active)) return true;
+
+                // سپس همه کادرهای قابل‌مشاهده را بررسی می‌کنیم؛ وابسته به نام placeholder یا ساختار پنجره نیستیم.
+                const fields = [...document.querySelectorAll(
+                    'textarea,input,[contenteditable="true"],[role="textbox"]'
+                )].filter(visible);
+                return fields.some(matches);
+            }, captionText);
+
+            if (!captionVerified) throw new Error('متن در کادر توضیحات عکس قرار نگرفت؛ ارسال عکس انجام نشد.');
+            logStep(mobile, 'IMAGE_CAPTION_FILLED', 'متن توضیحات داخل پیش‌نمایش عکس قرار گرفت؛ عکس و متن با یک ارسال فرستاده می‌شوند.');
+        }
+
+        // دکمه و پنجره در یک ارزیابی پیدا می‌شوند تا index یا عنصر اشتباه کلیک نشود.
+        const clickResult = await page.evaluate(() => {
+            const visible = el => {
+                if (!el || el.disabled || el.getAttribute('aria-disabled') === 'true') return false;
+                const r = el.getBoundingClientRect();
+                const st = getComputedStyle(el);
+                return r.width > 5 && r.height > 5 && st.display !== 'none' &&
+                    st.visibility !== 'hidden' && Number(st.opacity || 1) > 0 &&
+                    el.getAttribute('aria-hidden') !== 'true';
+            };
+            const dialogs = [...document.querySelectorAll(
+                '[role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="Modal" i]'
+            )].filter(visible);
+            const root = dialogs.find(el => {
+                const t = String(el.innerText || '').toLowerCase();
+                return /عکس|تصویر|photo|image/.test(t) || el.querySelector('img, [data-testid*="media" i]');
+            }) || dialogs[dialogs.length - 1];
+            if (!root) return { ok: false, reason: 'PREVIEW_DIALOG_NOT_FOUND', dialogs: dialogs.length };
+
+            const buttons = [...root.querySelectorAll('button,[role="button"]')].filter(visible);
+            const label = el => [el.innerText, el.getAttribute('aria-label'), el.getAttribute('title'),
+            el.getAttribute('data-testid'), el.getAttribute('data-tooltip')]
+                .filter(Boolean).join(' ').trim().toLowerCase();
+            let button = buttons.find(el => /ارسال|فرستادن|send|submit/.test(label(el)));
+            if (!button && buttons.length) button = buttons[buttons.length - 1];
+            if (!button) return { ok: false, reason: 'SEND_BUTTON_NOT_FOUND', dialogs: dialogs.length };
+
+            button.scrollIntoView({ block: 'center', inline: 'center' });
+            button.click();
+            return { ok: true, buttonLabel: label(button) || '(دکمه آیکونی)', dialogText: String(root.innerText || '').slice(0, 180) };
+        });
+
+        if (!clickResult?.ok) {
+            throw new Error(`کلیک دکمه ارسال عکس انجام نشد: ${clickResult?.reason || 'UNKNOWN'} (پنجره‌ها: ${clickResult?.dialogs ?? 0})`);
+        }
+        logStep(mobile, 'IMAGE_SEND_BUTTON_CLICKED', `دکمه ارسال عکس کلیک شد: ${clickResult.buttonLabel}`);
+
+        // فقط وقتی پنجره پیش‌نمایش بسته شود، ارسال از سمت رابط کاربری تأییدشده محسوب می‌شود.
+        let previewClosed = false;
+        const verifyStarted = Date.now();
+        while (Date.now() - verifyStarted < 8000) {
+            previewClosed = await page.evaluate(() => {
+                const visible = el => {
+                    const r = el.getBoundingClientRect(), st = getComputedStyle(el);
+                    return r.width > 5 && r.height > 5 && st.display !== 'none' &&
+                        st.visibility !== 'hidden' && Number(st.opacity || 1) > 0 &&
+                        el.getAttribute('aria-hidden') !== 'true';
+                };
+                const dialogs = [...document.querySelectorAll(
+                    '[role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="Modal" i]'
+                )].filter(visible);
+                const preview = dialogs.find(el => /عکس|تصویر|photo|image/i.test(String(el.innerText || '')) || el.querySelector('img'));
+                return !preview;
+            });
+            if (previewClosed) break;
+            await sleep(300);
+        }
+
+        if (!previewClosed) throw new Error('دکمه کلیک شد، اما پنجره پیش‌نمایش بسته نشد؛ ارسال عکس تأیید نشد.');
+
+        logSuccess(mobile, 'ارسال عکس از رابط کاربری تأیید شد؛ پنجره پیش‌نمایش بسته شد.');
+
+        return true;
+    } catch (error) {
+        logFailure(mobile, 'IMAGE_SEND_FAILED', 'ارسال عکس تأیید نشد.', error.message);
+        return false;
+    }
+}
+
+async function processUserActionInternal(mobile, text, imagePath = null) {
     if (!page) {
         logFailure(mobile, 'BROWSER_NOT_READY', 'مرورگر هنوز راه‌اندازی نشده است.');
         return false;
@@ -575,7 +777,7 @@ async function processUserActionInternal(mobile, text) {
 
     console.log('');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`📨 شروع پردازش پیام | گیرنده: ${mobile}`);
+    console.log(`📨 شروع پردازش ${imagePath ? 'عکس' : 'پیام'} | گیرنده: ${mobile}`);
     console.log(`🔢 شماره استاندارد: ${formattedMobile}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
@@ -732,10 +934,10 @@ async function processUserActionInternal(mobile, text) {
         }
 
         // لینک چت به‌تنهایی کافی نیست؛ خود صفحه چت باید واقعاً Render شده باشد.
-        const chatReady = await focusMessageInput(mobile, 25000);
+        const chatReady = await focusMessageInput(mobile, 25000, imagePath ? 'IMAGE' : 'MESSAGE');
 
         if (!chatReady) {
-            logFailure(mobile, 'CHAT_PAGE_NOT_READY', 'صفحه واقعی چت و کادر پیام بعد از Render شدن آماده نشد.', `URL: ${page.url()}`);
+            logFailure(mobile, 'CHAT_PAGE_NOT_READY', imagePath ? 'صفحه چت برای ارسال عکس آماده نشد.' : 'صفحه واقعی چت و کادر پیام بعد از Render شدن آماده نشد.', `URL: ${page.url()}`);
             await returnToBaleHome();
             return { success: false, permanentFailure: false, reason: 'CHAT_PAGE_NOT_READY' };
         }
@@ -743,24 +945,27 @@ async function processUserActionInternal(mobile, text) {
         // مکث اضافه برای پایدار شدن DOM بله روی اینترنت ضعیف.
         await waitForPageSettled(1500);
 
-        const sent = await sendCurrentMessage(mobile, text);
+        const sent = imagePath
+            ? await sendCurrentImage(mobile, imagePath, text)
+            : await sendCurrentMessage(mobile, text);
 
         if (!sent) {
-            logFailure(mobile, 'SEND_FAILED', 'صفحه چت وجود دارد اما ارسال بعد از چند تلاش انجام نشد؛ خطا موقتی تلقی می‌شود.', `URL: ${page.url()}`);
+            const failureReason = imagePath ? 'IMAGE_SEND_FAILED' : 'SEND_FAILED';
+            logFailure(mobile, failureReason, imagePath ? 'ارسال عکس تأیید نشد؛ مورد برای بررسی/تلاش مجدد ناموفق برمی‌گردد.' : 'ارسال پیام بعد از چند تلاش انجام نشد؛ خطا موقتی تلقی می‌شود.', `URL: ${page.url()}`);
             await returnToBaleHome();
-            return { success: false, permanentFailure: false, reason: 'SEND_FAILED' };
+            return { success: false, permanentFailure: false, reason: failureReason };
         }
 
-        logSuccess(mobile, 'پیام با موفقیت ارسال شد؛ کادر پیام بعد از ارسال خالی شد.');
+        logSuccess(mobile, imagePath ? 'عکس با موفقیت از رابط کاربری ارسال شد.' : 'پیام با موفقیت ارسال شد؛ کادر پیام بعد از ارسال خالی شد.');
 
         console.log(`📱 گیرنده: ${mobile}`);
         console.log(`🔢 شماره لینک: ${formattedMobile}`);
         console.log(`🔗 چت: ${chatUrl}`);
-        console.log('📝 وضعیت: ارسال موفق و تأیید شد');
+        console.log(`📝 وضعیت: ${imagePath ? 'ارسال عکس تأیید شد' : 'ارسال پیام موفق و تأیید شد'}`);
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('');
 
-        return { success: true, permanentFailure: false, reason: 'SENT' };
+        return { success: true, permanentFailure: false, reason: imagePath ? 'IMAGE_SENT' : 'SENT' };
     } catch (error) {
         logFailure(
             mobile,
@@ -783,5 +988,11 @@ export const processUserAction = (mobile, text) => {
 
     actionQueue = run.catch(() => { });
 
+    return run;
+};
+
+export const processUserImageAction = (mobile, imagePath, caption = '') => {
+    const run = actionQueue.then(() => processUserActionInternal(mobile, caption, imagePath));
+    actionQueue = run.catch(() => { });
     return run;
 };
