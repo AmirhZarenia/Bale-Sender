@@ -50,11 +50,13 @@ const CampaignSchema = new mongoose.Schema({
     },
 
     subjects: [
-        {
-            type: String,
-            required: true
-        }
+        { type: String, required: true }
     ],
+
+    // نوع محتوای کمپین: متن، تصویر یا متن همراه تصویر
+    contentMode: { type: String, enum: ['text', 'image', 'text-image'], default: 'text' },
+    // نام فایل‌های انتخاب‌شده از کتابخانه تصاویر
+    images: { type: [String], default: [] },
 
     targetCategories: [
         {
@@ -158,19 +160,8 @@ const CampaignSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// هر نمونه برنامه می‌تواند مجموعه کمپین مخصوص خودش را در همان دیتابیس داشته باشد.
-// در فایل .env هر برنامه مقدار CAMPAIGN_COLLECTION را منحصربه‌فرد تنظیم کنید.
-// برای حفظ سازگاری با داده‌های قبلی، مقدار پیش‌فرض همان مجموعه قبلی یعنی campaigns است.
-const campaignCollectionName = process.env.CAMPAIGN_COLLECTION || 'campaigns';
-
-if (!/^[a-zA-Z0-9_-]+$/.test(campaignCollectionName)) {
-    throw new Error(
-        'CAMPAIGN_COLLECTION نامعتبر است. فقط حروف انگلیسی، عدد، _ و - مجاز هستند.'
-    );
-}
 
 export default mongoose.model(
     'Campaign',
-    CampaignSchema,
-    campaignCollectionName
+    CampaignSchema
 );
