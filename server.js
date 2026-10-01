@@ -438,6 +438,34 @@ function formatDateOnly(date) {
     return `${y}-${m}-${d}`;
 }
 
+// ثبت آمار روزانه مخصوص همان کمپین.
+function updateCampaignDailyStat(campaign, field, date = new Date()) {
+    if (!campaign) return;
+
+    const dateKey = formatDateOnly(date);
+
+    if (!Array.isArray(campaign.dailyStats)) {
+        campaign.dailyStats = [];
+    }
+
+    let dayStat = campaign.dailyStats.find(item => item.date === dateKey);
+
+    if (!dayStat) {
+        campaign.dailyStats.push({
+            date: dateKey,
+            sent: 0,
+            failed: 0
+        });
+        dayStat = campaign.dailyStats[campaign.dailyStats.length - 1];
+    }
+
+    if (field === 'sent') {
+        dayStat.sent = Number(dayStat.sent || 0) + 1;
+    } else if (field === 'failed') {
+        dayStat.failed = Number(dayStat.failed || 0) + 1;
+    }
+}
+
 function validateDateRange(startDate, endDate) {
     const start = normalizeDateOnly(startDate);
     const end = normalizeDateOnly(endDate);
@@ -2317,6 +2345,17 @@ app.get(
                     totalFailed:
                         campaign.totalFailed,
 
+                    dailyStats:
+                        Array.isArray(campaign.dailyStats)
+                            ? campaign.dailyStats
+                                .map(item => ({
+                                    date: item.date,
+                                    sent: Number(item.sent || 0),
+                                    failed: Number(item.failed || 0)
+                                }))
+                                .sort((a, b) => a.date.localeCompare(b.date))
+                            : [],
+
                     // اگر کمپین در حال اجراست
                     // مقدار زنده را ارسال می‌کنیم.
                     // اگر متوقف است مقدار ذخیره‌شده DB.
@@ -3500,7 +3539,7 @@ export const runCampaignWorker = (campaignId) => {
 
 
                 campaign.totalSent += 1;
-
+                updateCampaignDailyStat(campaign, 'sent', new Date());
 
                 await campaign.save();
 
@@ -3531,6 +3570,7 @@ export const runCampaignWorker = (campaignId) => {
                 }
 
                 campaign.totalFailed += 1;
+                updateCampaignDailyStat(campaign, 'failed', new Date());
                 await campaign.save();
 
                 console.log(
