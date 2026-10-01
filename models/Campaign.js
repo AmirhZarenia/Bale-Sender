@@ -154,6 +154,25 @@ const CampaignSchema = new mongoose.Schema({
     totalFailed: {
         type: Number,
         default: 0
+    },
+
+    // آمار روزانه مخصوص همین کمپین؛ فقط روزهایی که واقعاً ارسال/خطا داشته‌اند.
+    dailyStats: {
+        type: [{
+            date: {
+                type: String,
+                required: true
+            },
+            sent: {
+                type: Number,
+                default: 0
+            },
+            failed: {
+                type: Number,
+                default: 0
+            }
+        }],
+        default: []
     }
 
 }, {
