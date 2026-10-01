@@ -1136,6 +1136,47 @@
             background: #f8fafc;
         }
 
+        .campaign-daily-stats-card {
+            margin-top: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .campaign-daily-stats-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .campaign-daily-stats-table {
+            margin-top: 0;
+            min-width: 520px;
+        }
+
+        .campaign-daily-stats-table th,
+        .campaign-daily-stats-table td {
+            padding: 10px 12px;
+        }
+
+        .campaign-daily-stats-table .daily-sent {
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .campaign-daily-stats-table .daily-failed {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .campaign-daily-stats-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 18px;
+            font-size: .82rem;
+        }
+
         .monitor-schedule-head {
             display: flex;
             align-items: center;
@@ -2316,6 +2357,32 @@
                             <span><b id="progressPendingLabel">0</b> باقی‌مانده</span>
                         </div>
                     </div>
+
+                    <div class="campaign-daily-stats-card">
+                        <div class="section-title-row compact">
+                            <div>
+                                <div class="section-kicker">DAILY STATISTICS</div>
+                                <h3>آمار روزانه این کمپین</h3>
+                            </div>
+                        </div>
+                        <div class="campaign-daily-stats-table-wrap">
+                            <table class="campaign-daily-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>روز</th>
+                                        <th>پیام‌های ارسال‌شده</th>
+                                        <th>خطاها</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="campaignDailyStatsBody">
+                                    <tr>
+                                        <td colspan="4" class="campaign-daily-stats-empty">کمپینی انتخاب نشده است.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card monitoring-side-card">
@@ -3223,6 +3290,51 @@
             updateCampaignButtons(currentCampaignStatus);
         }
 
+        function renderCampaignDailyStats(dailyStats) {
+            const tbody = document.getElementById('campaignDailyStatsBody');
+            if (!tbody) return;
+
+            const stats = Array.isArray(dailyStats)
+                ? [...dailyStats].sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
+                : [];
+
+            if (!stats.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="campaign-daily-stats-empty">
+                            هنوز برای این کمپین آماری ثبت نشده است.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = stats.map(item => {
+                const date = String(item.date || '');
+                let dayName = '--';
+
+                try {
+                    const parts = date.split('-').map(Number);
+                    if (parts.length === 3 && parts.every(Number.isFinite)) {
+                        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                        dayName = DAY_NAMES[d.getDay()] || '--';
+                    }
+                } catch { }
+
+                const sent = Number(item.sent || 0);
+                const failed = Number(item.failed || 0);
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(isoToJalali(date) || date)}</td>
+                        <td>${escapeHtml(dayName)}</td>
+                        <td class="daily-sent">${sent.toLocaleString('fa-IR')}</td>
+                        <td class="daily-failed">${failed.toLocaleString('fa-IR')}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function applyCampaignStatusToUI(payload) {
             const status = payload.status || 'idle';
             const stats = payload.stats || {};
@@ -3236,6 +3348,7 @@
             currentCampaignStatus = status;
             currentCampaignSnapshot = payload;
             renderMonitorSchedule(payload);
+            renderCampaignDailyStats(payload.dailyStats);
 
             document.getElementById('campaignLiveBadge').className = `status-badge ${status}`;
             document.getElementById('campaignLiveBadge').innerText = statusText(status);
@@ -3413,6 +3526,7 @@
             document.getElementById('monitorScheduleWarning').innerText = '';
             document.getElementById('monitorScheduleState').className = 'schedule-live-state waiting';
             document.getElementById('monitorScheduleState').innerText = 'کمپین انتخاب نشده';
+            renderCampaignDailyStats([]);
             updateCampaignButtons('idle');
         }
 
