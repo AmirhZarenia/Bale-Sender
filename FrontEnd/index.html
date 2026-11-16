@@ -1871,6 +1871,16 @@
             <li><button type="button" onclick="switchTab('tab-campaign', this)">🎯 ساخت کمپین</button></li>
             <li><button type="button" onclick="switchTab('tab-monitor', this)">📊 داشبورد و مانیتورینگ</button></li>
         </ul>
+
+        <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+            <button type="button" id="openBaleSessionBtn" class="btn btn-success" style="width: 100%;"
+                onclick="openBaleSession()">
+                🔐 باز کردن نشست بله
+            </button>
+            <small style="display:block; margin-top:8px; color:var(--text-muted); line-height:1.8; text-align:center;">
+                برای ورود یا بررسی حساب بله
+            </small>
+        </div>
     </aside>
 
     <!-- محتوای اصلی صفحات -->
@@ -2408,6 +2418,37 @@
     <script>
         const API_URL = 'http://localhost:3000/api';
         let messagesCache = {};
+
+        async function openBaleSession() {
+            const button = document.getElementById('openBaleSessionBtn');
+            if (!button || button.disabled) return;
+
+            const originalText = button.innerText;
+            button.disabled = true;
+            button.innerText = '⏳ در حال باز کردن نشست...';
+
+            try {
+                const response = await fetch(`${API_URL}/bale/session/open`, {
+                    method: 'POST',
+                    cache: 'no-store'
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'باز کردن نشست بله ناموفق بود.');
+                }
+
+                appendLog('[BALE] نشست بله باز شد. Chrome را پس از ورود دستی نبندید تا زمانی که کارتان تمام شود.', 'success');
+                alert('نشست بله باز شد. اکنون می‌توانید وارد حساب خود شوید.');
+            } catch (error) {
+                appendLog(`[BALE] خطا در باز کردن نشست: ${error.message}`, 'error');
+                alert(`خطا در باز کردن نشست بله:\n${error.message}`);
+            } finally {
+                button.disabled = false;
+                button.innerText = originalText;
+            }
+        }
 
 
         function switchTab(tabId, btn) {
