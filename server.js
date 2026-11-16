@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 import User from './models/User.js';
 import Message from './models/Message.js';
 import Campaign from './models/Campaign.js';
-import { initBaleBrowser, processUserAction, processUserImageAction } from './baleService.js';
+import { openBaleSessionManually, processUserAction, processUserImageAction } from './baleService.js';
 
 const app = express();
 
@@ -746,7 +746,7 @@ mongoose.connect(process.env.MONGO_URI)
 
         console.log('✅ Connected to MongoDB');
 
-        initBaleBrowser();
+        // Chrome فقط با درخواست کاربر یا هنگام اجرای ارسال باز می‌شود.
         startCampaignScheduler();
 
     })
@@ -763,6 +763,35 @@ mongoose.connect(process.env.MONGO_URI)
 // ==========================================
 // API Routes
 // ==========================================
+
+
+// ==========================================
+// باز کردن دستی نشست بله
+// ==========================================
+app.post('/api/bale/session/open', async (req, res) => {
+    try {
+        const result = await openBaleSessionManually();
+
+        if (!result?.success) {
+            return res.status(500).json({
+                success: false,
+                error: result?.message || 'باز کردن نشست بله ناموفق بود.'
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: result.message || 'نشست بله باز شد.'
+        });
+    } catch (error) {
+        console.error('❌ [BALE_SESSION_OPEN_FAILED]', error);
+
+        return res.status(500).json({
+            success: false,
+            error: error.message || 'خطا در باز کردن نشست بله.'
+        });
+    }
+});
 
 
 // ==========================================
