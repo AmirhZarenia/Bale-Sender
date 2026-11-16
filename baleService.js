@@ -13,37 +13,127 @@ const NAVIGATION_GAP_MS = 1200;
 const INPUT_WAIT_MS = 20000;
 const SEND_VERIFY_WAIT_MS = 7000;
 const MAX_SEND_ATTEMPTS = 3;
+const CLOSE_AFTER_SUCCESS_MS = 3000;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export const initBaleBrowser = async () => {
-    console.log('🌐 Starting Puppeteer browser...');
+async function ensureBaleBrowser() {
+    // اگر Chrome از بیرون بسته شده باشد، Reference قبلی را کنار می‌گذاریم.
+    if (browser) {
+        try {
+            await browser.pages();
+        } catch {
+            browser = null;
+            page = null;
+        }
+    }
 
-    browser = await puppeteer.launch({
-        headless: false,
-        executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-        userDataDir: './bale_session',
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox'
-        ]
-    });
+    if (!browser) {
+        console.log('🌐 [BALE_BROWSER] در حال باز کردن Chrome با نشست ذخیره‌شده...');
 
-    page = await browser.newPage();
-    try { await page.context().overridePermissions(BALE_HOME_URL, ['clipboard-read', 'clipboard-write']); } catch (error) { console.warn(`⚠️ اجازه Clipboard فعال نشد: ${error.message}`); }
-    await page.setViewport({ width: 1280, height: 800 });
+        browser = await puppeteer.launch({
+            headless: false,
+            executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+            userDataDir: './bale_session',
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ]
+        });
+    }
 
-    console.log('🔄 Loading Bale Web...');
+    let pages = [];
+    try {
+        pages = await browser.pages();
+    } catch (error) {
+        browser = null;
+        page = null;
+        throw new Error(`مرورگر بله در دسترس نیست: ${error.message}`);
+    }
 
-    await page.goto(BALE_HOME_URL, {
-        waitUntil: 'domcontentloaded',
-        timeout: PAGE_TIMEOUT
-    });
+    page = pages.find(p => {
+        try {
+            return !p.isClosed();
+        } catch {
+            return false;
+        }
+    }) || await browser.newPage();
 
-    await sleep(2500);
+    try {
+        await page.setViewport({ width: 1280, height: 800 });
+    } catch { }
 
-    console.log('✅ Browser ready!');
-};
+    try {
+        await browser.defaultBrowserContext().overridePermissions(
+            BALE_HOME_URL,
+            [
+                'clipboard-read',
+                'clipboard-write'
+            ]
+        );
+    } catch (error) {
+        console.warn(`⚠️ اجازه Clipboard فعال نشد: ${error.message}`);
+    }
+
+    // فقط تب خالی را به صفحه بله می‌بریم؛ صفحه‌ای که کاربر قبلاً باز کرده دست‌کاری نمی‌شود.
+    let currentUrl = '';
+    try {
+        currentUrl = page.url();
+    } catch { }
+
+    if (!currentUrl || currentUrl === 'about:blank') {
+        console.log('🔄 [BALE_BROWSER] در حال بارگذاری Bale Web...');
+        await page.goto(BALE_HOME_URL, {
+            waitUntil: 'domcontentloaded',
+            timeout: PAGE_TIMEOUT
+        });
+        await sleep(2500);
+    }
+
+    try {
+        await page.bringToFront();
+    } catch { }
+
+    console.log('✅ [BALE_BROWSER] نشست بله آماده است.');
+    return page;
+}
+
+async function closeBaleBrowser() {
+    const currentBrowser = browser;
+
+    // قبل از بستن، Referenceها را خالی می‌کنیم تا در صورت خطا هم
+    // درخواست بعدی بتواند یک نشست تازه و سالم بسازد.
+    browser = null;
+    page = null;
+
+    if (!currentBrowser) return;
+
+    try {
+        await currentBrowser.close();
+        console.log('🔒 [BALE_BROWSER] Chrome پس از پایان عملیات ارسال بسته شد.');
+    } catch (error) {
+        console.warn(`⚠️ [BALE_BROWSER] بستن Chrome با هشدار مواجه شد: ${error.message}`);
+    }
+}
+
+function enqueueBaleAction(action) {
+    const run = actionQueue.then(action);
+    actionQueue = run.catch(() => { });
+    return run;
+}
+
+// برای سازگاری با هر استفاده قدیمی احتمالی از این تابع، آن را نگه می‌داریم؛
+// اما دیگر در زمان روشن شدن سرور فراخوانی نمی‌شود.
+export const initBaleBrowser = async () => ensureBaleBrowser();
+
+// این تابع فقط با کلیک کاربر اجرا می‌شود و Chrome را باز نگه می‌دارد.
+export const openBaleSessionManually = () => enqueueBaleAction(async () => {
+    await ensureBaleBrowser();
+    return {
+        success: true,
+        message: 'نشست بله با موفقیت باز شد.'
+    };
+});
 
 function formatMobileForLink(mobile) {
     let raw = String(mobile ?? '')
@@ -115,8 +205,8 @@ async function recoverBalePage(reason = '') {
             } catch { }
         }
 
-        if (!browser || !browser.isConnected()) {
-            console.error('❌ [PAGE_RECOVERY_FAILED] | Browser دیگر متصل نیست.');
+        if (!browser) {
+            console.error('❌ [PAGE_RECOVERY_FAILED] | Browser در دسترس نیست.');
             return false;
         }
 
@@ -981,18 +1071,49 @@ async function processUserActionInternal(mobile, text, imagePath = null) {
     }
 }
 
-// همه ارسال‌ها روی یک Page مشترک، کاملاً صف‌بندی می‌شوند.
-// بنابراین ارسال دستی/خودکار همزمان نمی‌تواند Focus یا صفحه کاربر بعدی را به هم بزند.
-export const processUserAction = (mobile, text) => {
-    const run = actionQueue.then(() => processUserActionInternal(mobile, text));
+// همه عملیات‌ها (باز کردن دستی نشست و ارسال‌ها) در یک صف اجرا می‌شوند.
+// باز کردن دستی Chrome را باز نگه می‌دارد؛ هر عملیات ارسال پس از پایان Chrome را می‌بندد.
+async function runBaleSendOperation(mobile, text, imagePath = null) {
+    try {
+        await ensureBaleBrowser();
 
-    actionQueue = run.catch(() => { });
+        const result = await processUserActionInternal(
+            mobile,
+            text,
+            imagePath
+        );
 
-    return run;
-};
+        // فقط بعد از تأیید موفقیت ارسال، سه ثانیه صبر می‌کنیم.
+        if (result?.success === true) {
+            console.log(
+                `⏳ [BALE_BROWSER] ارسال تأیید شد؛ Chrome تا ${CLOSE_AFTER_SUCCESS_MS / 1000} ثانیه دیگر بسته می‌شود.`
+            );
 
-export const processUserImageAction = (mobile, imagePath, caption = '') => {
-    const run = actionQueue.then(() => processUserActionInternal(mobile, caption, imagePath));
-    actionQueue = run.catch(() => { });
-    return run;
-};
+            await sleep(CLOSE_AFTER_SUCCESS_MS);
+        }
+
+        return result;
+
+    } catch (error) {
+        console.error(
+            `❌ [BALE_SEND_START_FAILED] | شماره: ${mobile} | ${error.message}`
+        );
+
+        return {
+            success: false,
+            permanentFailure: false,
+            reason: 'BROWSER_START_FAILED',
+            error: error.message
+        };
+
+    } finally {
+        // چه ارسال موفق باشد و چه ناموفق، مرورگر در نهایت بسته می‌شود.
+        await closeBaleBrowser();
+    }
+}
+
+export const processUserAction = (mobile, text) =>
+    enqueueBaleAction(() => runBaleSendOperation(mobile, text));
+
+export const processUserImageAction = (mobile, imagePath, caption = '') =>
+    enqueueBaleAction(() => runBaleSendOperation(mobile, caption, imagePath));
