@@ -17,100 +17,158 @@ const CLOSE_AFTER_SUCCESS_MS = 3000;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function ensureBaleBrowser() {
-    // اگر Chrome از بیرون بسته شده باشد، Reference قبلی را کنار می‌گذاریم.
-    if (browser) {
-        try {
-            await browser.pages();
-        } catch {
+function isBaleBrowserConnected(candidate = browser) {
+    if (!candidate) return false;
+    try {
+        return typeof candidate.isConnected === 'function'
+            ? candidate.isConnected()
+            : true;
+    } catch {
+        return false;
+    }
+}
+
+async function launchBaleBrowser() {
+    console.log('🌐 [BALE_BROWSER] در حال باز کردن Chrome با نشست ذخیره‌شده...');
+
+    const launchedBrowser = await puppeteer.launch({
+        headless: false,
+        executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+        userDataDir: './bale_session',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
+        ]
+    });
+
+    browser = launchedBrowser;
+    launchedBrowser.on('disconnected', () => {
+        // رویداد مرورگر قدیمی نباید Referenceهای مرورگر جدید را پاک کند.
+        if (browser === launchedBrowser) {
             browser = null;
             page = null;
+            console.warn('⚠️ [BALE_BROWSER] اتصال Chrome قطع شد؛ در درخواست بعدی نشست دوباره ساخته می‌شود.');
         }
-    }
+    });
 
-    if (!browser) {
-        console.log('🌐 [BALE_BROWSER] در حال باز کردن Chrome با نشست ذخیره‌شده...');
+    return launchedBrowser;
+}
 
-        browser = await puppeteer.launch({
-            headless: false,
-            executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-            userDataDir: './bale_session',
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-            ]
-        });
-    }
+async function discardBaleBrowser(closeProcess = false) {
+    const staleBrowser = browser;
+    browser = null;
+    page = null;
 
-    let pages = [];
-    try {
-        pages = await browser.pages();
-    } catch (error) {
-        browser = null;
-        page = null;
-        throw new Error(`مرورگر بله در دسترس نیست: ${error.message}`);
-    }
-
-    page = pages.find(p => {
+    if (closeProcess && staleBrowser && isBaleBrowserConnected(staleBrowser)) {
         try {
-            return !p.isClosed();
-        } catch {
-            return false;
+            await staleBrowser.close();
+        } catch (error) {
+            console.warn(`⚠️ [BALE_BROWSER] پاک‌سازی اتصال قبلی: ${error.message}`);
         }
-    }) || await browser.newPage();
+    }
+}
 
-    try {
-        await page.setViewport({ width: 1280, height: 800 });
-    } catch { }
+async function ensureBaleBrowser() {
+    let lastError = null;
 
-    try {
-        await browser.defaultBrowserContext().overridePermissions(
-            BALE_HOME_URL,
-            [
-                'clipboard-read',
-                'clipboard-write'
-            ]
-        );
-    } catch (error) {
-        console.warn(`⚠️ اجازه Clipboard فعال نشد: ${error.message}`);
+    // اگر Chrome بین دو درخواست قطع شده باشد، حداکثر یک بار اتصال را از نو می‌سازیم.
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            if (!isBaleBrowserConnected()) {
+                await discardBaleBrowser(false);
+                await launchBaleBrowser();
+            }
+
+            const activeBrowser = browser;
+            if (!isBaleBrowserConnected(activeBrowser)) {
+                throw new Error('اتصال Chrome پس از راه‌اندازی برقرار نماند.');
+            }
+
+            const pages = await activeBrowser.pages();
+            if (!isBaleBrowserConnected(activeBrowser)) {
+                throw new Error('اتصال Chrome هنگام دریافت فهرست صفحات قطع شد.');
+            }
+
+            const usablePage = pages.find(p => {
+                try {
+                    return !p.isClosed();
+                } catch {
+                    return false;
+                }
+            });
+
+            // ساخت Page جداگانه ممکن است دقیقاً هنگام قطع CDP شکست بخورد؛
+            // این خطا باید وارد مسیر راه‌اندازی مجدد شود، نه اینکه Browser خراب باقی بماند.
+            page = usablePage || await activeBrowser.newPage();
+
+            if (!isBaleBrowserConnected(activeBrowser) || !page || page.isClosed()) {
+                throw new Error('صفحه بله پس از ایجاد در دسترس نیست.');
+            }
+
+            await page.setViewport({ width: 1280, height: 800 });
+
+            try {
+                await activeBrowser.defaultBrowserContext().overridePermissions(
+                    BALE_HOME_URL,
+                    ['clipboard-read', 'clipboard-write']
+                );
+            } catch (error) {
+                if (!isBaleBrowserConnected(activeBrowser)) throw error;
+                console.warn(`⚠️ اجازه Clipboard فعال نشد: ${error.message}`);
+            }
+
+            let currentUrl = page.url();
+            if (!currentUrl || currentUrl === 'about:blank') {
+                console.log('🔄 [BALE_BROWSER] در حال بارگذاری Bale Web...');
+                await page.goto(BALE_HOME_URL, {
+                    waitUntil: 'domcontentloaded',
+                    timeout: PAGE_TIMEOUT
+                });
+                await sleep(2500);
+            }
+
+            if (!isBaleBrowserConnected(activeBrowser) || page.isClosed()) {
+                throw new Error('اتصال Chrome یا صفحه بله پیش از آماده‌سازی قطع شد.');
+            }
+
+            await page.bringToFront();
+            console.log('✅ [BALE_BROWSER] نشست بله آماده است.');
+            return page;
+
+        } catch (error) {
+            lastError = error;
+            console.warn(`⚠️ [BALE_BROWSER] تلاش ${attempt} ناموفق بود: ${error.message}`);
+
+            // اگر ارتباط CDP خراب شده باشد، نمونه قبلی را نگه نمی‌داریم.
+            await discardBaleBrowser(true);
+
+            if (attempt < 2) {
+                console.log('🔁 [BALE_BROWSER] راه‌اندازی مجدد Chrome با همان نشست ذخیره‌شده...');
+                await sleep(800);
+            }
+        }
     }
 
-    // فقط تب خالی را به صفحه بله می‌بریم؛ صفحه‌ای که کاربر قبلاً باز کرده دست‌کاری نمی‌شود.
-    let currentUrl = '';
-    try {
-        currentUrl = page.url();
-    } catch { }
-
-    if (!currentUrl || currentUrl === 'about:blank') {
-        console.log('🔄 [BALE_BROWSER] در حال بارگذاری Bale Web...');
-        await page.goto(BALE_HOME_URL, {
-            waitUntil: 'domcontentloaded',
-            timeout: PAGE_TIMEOUT
-        });
-        await sleep(2500);
-    }
-
-    try {
-        await page.bringToFront();
-    } catch { }
-
-    console.log('✅ [BALE_BROWSER] نشست بله آماده است.');
-    return page;
+    throw new Error(`مرورگر بله پس از تلاش مجدد در دسترس نیست: ${lastError?.message || 'خطای نامشخص'}`);
 }
 
 async function closeBaleBrowser() {
     const currentBrowser = browser;
 
-    // قبل از بستن، Referenceها را خالی می‌کنیم تا در صورت خطا هم
-    // درخواست بعدی بتواند یک نشست تازه و سالم بسازد.
+    // ابتدا Referenceها را آزاد می‌کنیم تا رویداد disconnected قدیمی
+    // نتواند وضعیت مرورگر بعدی را تغییر دهد.
     browser = null;
     page = null;
 
     if (!currentBrowser) return;
 
     try {
-        await currentBrowser.close();
-        console.log('🔒 [BALE_BROWSER] Chrome پس از پایان عملیات ارسال بسته شد.');
+        if (isBaleBrowserConnected(currentBrowser)) {
+            await currentBrowser.close();
+            console.log('🔒 [BALE_BROWSER] Chrome پس از پایان عملیات ارسال بسته شد.');
+        } else {
+            console.log('ℹ️ [BALE_BROWSER] Chrome قبلاً بسته شده بود؛ Reference پاک شد.');
+        }
     } catch (error) {
         console.warn(`⚠️ [BALE_BROWSER] بستن Chrome با هشدار مواجه شد: ${error.message}`);
     }
